@@ -14,9 +14,11 @@ class UserData extends Model
 
     protected $fillable = [
         'dni',
+        'phone',
         'birth_date',
         'gender',
         'address',
+        'phone',
         'user_id',
     ];
 

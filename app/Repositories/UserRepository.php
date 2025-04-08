@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 
+use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -9,6 +10,21 @@ class UserRepository
     public function getAll()
     {
         return User::paginate(10);
+    }
+
+    public function findByEmail($email)
+    {
+        return User::where("email", $email)->first();
+    }
+
+    public function getClients()
+    {
+        return User::role(Role::CLIENT)->get();
+    }
+
+    public function getMassageTherapists()
+    {
+        return User::role(Role::MASSAGE_THERAPIST)->get();
     }
 
     public function findById(int $id)

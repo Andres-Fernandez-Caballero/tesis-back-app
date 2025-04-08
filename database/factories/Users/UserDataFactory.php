@@ -20,7 +20,8 @@ class UserDataFactory extends Factory
         return [
             'dni' => $this->faker->unique()->numerify('########'),
             'birth_date' => $this->faker->date(),
-            'gender' => $this->faker->randomElement(['male', 'female']),
+            'phone' => $this->faker->unique()->numerify('########'),
+            'gender' => $this->faker->randomElement(['male', 'female', 'other']),
             'address' => $this->faker->address(),
             'user_id' => User::factory(), // Relación con User
         ];

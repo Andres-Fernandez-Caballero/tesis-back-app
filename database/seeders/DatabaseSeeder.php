@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\Role;
 use App\Models\User;
 use App\Models\Users\UserData;
+use Database\Seeders\Therapists\TagSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,9 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(
+        $this->call([
+            TagSeeder::class,
             RoleSeeder::class,
-        );
+        ]);
 
 
 
