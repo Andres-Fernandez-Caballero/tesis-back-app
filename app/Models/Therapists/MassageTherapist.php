@@ -3,10 +3,11 @@
 namespace App\Models\Therapists;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class MassageTherapist extends Model
+class MassageTherapist extends Therapist
 {
     /** @use HasFactory<\Database\Factories\Therapists\MassageTherapistFactory> */
     use HasFactory;
+    protected $table = 'therapists';
+    protected $visible = ['field_m'];
 }
