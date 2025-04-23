@@ -1,0 +1,21 @@
+{
+    "name": "TESIS_BACK",
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    "service": "laravel.test",
+    "workspaceFolder": "/var/www/html",
+    "customizations": {
+        "vscode": {
+            "extensions": [],
+            "settings": {}
+        }
+    },
+    "remoteUser": "sail",
+    "forwardPorts": [
+        80,
+        8000,
+        5173
+    ],
+    "postCreateCommand": "chown -R 1000:1000 /var/www/html 2>/dev/null || true"
+}
