@@ -18,7 +18,7 @@ class UserData extends Model
         'birth_date',
         'gender',
         'address',
-        'phone',
+        'profile_picture',
         'user_id',
     ];
 

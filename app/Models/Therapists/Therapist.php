@@ -2,10 +2,15 @@
 
 namespace App\Models\Therapists;
 
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Therapist extends Model
 {
+    use HasFactory;
     protected $guarded = [];
 
     protected $hidden = ['field_m', 'field_o'];
@@ -26,5 +31,15 @@ class Therapist extends Model
         }
 
         return parent::newFromBuilder($attributes, $connection);
+    }
+
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

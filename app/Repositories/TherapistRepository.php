@@ -16,8 +16,12 @@ class TherapistRepository
         return Therapist::all();
     }
 
-    public function getAllMassageTherapists()
+    public function getAllMassageTherapists(string $type)
     {
-        return Therapist::where('type', 'MassageTherapist')->get();
+        if($type || !empty($type)){
+            return Therapist::where('type', $type)->get();
+        }
+
+        return Therapist::all();
     }
 }

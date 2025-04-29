@@ -27,7 +27,20 @@ class TagSeeder extends Seeder
                 'Tailandés',
                 'Bambuterapia',
                 'Masaje en seco',
-            ]
+            ],
+            'en' =>
+            [
+                'Therapeutic',
+                'Anti-stress',
+                'Decontracting',
+                'Reflexology',
+                'Cranio-sacral',
+                'Shiatsu',
+                'Ayurvedic',
+                'Thai',
+                'Bamboo therapy',
+                'Dry massage',
+            ],
         ];
 
         

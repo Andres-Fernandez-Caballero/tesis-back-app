@@ -21,10 +21,10 @@ trait HasUserFilamentConfig
         return $this->hasRole(Role::ADMIN);
     }
 
-    // public function getFilamentAvatarUrl(): ?string
-    // {
-    //     return $this->avatar_url;
-    // }
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->user_data?->profile_picture;
+    }
 
     public function getFilamentName(): string
     {

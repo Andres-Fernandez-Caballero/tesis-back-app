@@ -15,6 +15,21 @@ class UserManagementService
         $this->userRepository = $userRepository;
     }
 
+    public function getAllUsers(int $pagination=0)
+    {
+        return $this->userRepository->getAll($pagination);
+    }
+
+    public function getAllTherapists(int $pagination=0)
+    {
+        return $this->userRepository->getAllTherapists($pagination);
+    }
+
+    public function getAllClients(int $pagination=0)
+    {
+        return $this->userRepository->getAllClients($pagination);
+    }
+
     public function getProfile(int $userId)
     {
         return $this->userRepository->findById($userId);
@@ -28,32 +43,6 @@ class UserManagementService
     public function deleteProfile(int $userId)
     {
         return $this->userRepository->delete($userId);
-    }
-
-    public function registerUser(array $data)
-    {
-        $data['password'] = Hash::make($data['password']);
-        return $this->userRepository->create($data);
-    }
-
-    public function login(array $credentials)
-    {
-        if (!Auth::attempt($credentials)) {
-            abort(401, 'Invalid Credentials');
-        }
-
-        return Auth::user()->createToken('auth_token')->plainTextToken;
-    }
-
-    public function sendResetPasswordLink(array $data)
-    {
-        $user = $this->userRepository->findByEmail($data['email']);
-        if (!$user) {
-            abort(404, 'User not found');
-        }
-
-        // Logic to send reset password link
-        return true;
     }
 
     public function unBanUsers()

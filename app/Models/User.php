@@ -5,6 +5,9 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\Users\States\AbstractUserState;
+use App\Models\Users\Traits\HasScore;
+use App\Models\Users\Traits\HasTherapist;
+use App\Models\Users\Traits\HasUserData;
 use App\Models\Users\Traits\HasUserFilamentConfig;
 use App\Models\Users\UserData;
 use Filament\Models\Contracts\FilamentUser;
@@ -26,7 +29,9 @@ class User extends Authenticatable implements FilamentUser, HasName
     use HasRoles;
     use HasUserFilamentConfig;
     use HasStates;
-
+    use HasScore;
+    use HasUserData;
+    use HasTherapist;
     /**
      * The attributes that are mass assignable.
      *
@@ -64,10 +69,6 @@ class User extends Authenticatable implements FilamentUser, HasName
         ];
     }
 
-    public function user_data(): HasOne
-    {
-        return $this->hasOne(UserData::class);
-    }
 
     /**
      * Get the user's initials

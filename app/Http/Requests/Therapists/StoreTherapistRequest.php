@@ -36,7 +36,7 @@ class StoreTherapistRequest extends FormRequest
 
         return match ($type) {
             'MassageTherapist' => array_merge($base, [
-                'field_m' => ['required', 'string', 'max:255'],
+                    //'field_m' => ['required', 'string', 'max:255'],
                 'field_o' => ['prohibited'], // ❌ No permitido para Car
             ]),
             'OtherTherapist' => array_merge($base, [

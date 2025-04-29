@@ -21,6 +21,25 @@ class UserManagementController extends Controller
         $this->service = $service;
     }
 
+    public function getAllUsers(): JsonResponse
+    {
+        $users = $this->service->getAllUsers(10);
+        return UserResource::collection($users)->response();
+    }
+
+    public function getAllTherapists(): JsonResponse
+    {
+        $therapists = $this->service->getAllTherapists(10);
+        return UserResource::collection($therapists)->response();
+    }
+
+    public function getAllClients(): JsonResponse
+    {
+        $clients = $this->service->getAllClients(10);
+        return UserResource::collection($clients)->response();
+    }
+    
+
     public function viewProfile(Request $request): JsonResponse
     {
         $user = $this->service->getProfile($request->user()->id);
@@ -33,21 +52,5 @@ class UserManagementController extends Controller
         return response()->json(new UserResource($user));
     }
 
-    public function register(RegisterUserRequest $request): JsonResponse
-    {
-        $user = $this->service->registerUser($request->validated());
-        return response()->json(new UserResource($user), 201);
-    }
-
-    public function login(LoginRequest $request): JsonResponse
-    {
-        $token = $this->service->login($request->validated());
-        return response()->json(['token' => $token]);
-    }
-
-    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
-    {
-        $this->service->sendResetPasswordLink($request->validated());
-        return response()->json(['message' => 'Password reset link sent']);
-    }
+    
 }

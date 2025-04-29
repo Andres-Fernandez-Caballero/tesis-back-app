@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Users\Score;
 use App\Models\Users\UserData;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -29,7 +30,7 @@ class UserFactory extends Factory
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => bcrypt('password'),
+            'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
@@ -38,6 +39,7 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             UserData::factory()->create(['user_id' => $user->id]);
+            Score::factory(5)->create(['user_id' => $user->id]);
         });
     }
     /**
