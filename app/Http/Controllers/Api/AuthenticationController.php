@@ -4,17 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Filament\Resources\UserResource;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Therapists\StoreTherapistRequest;
 use App\Http\Requests\Users\ForgotPasswordRequest;
 use App\Http\Requests\Users\LoginRequest;
 use App\Http\Requests\Users\RegisterUserRequest;
-use App\Models\Therapists\FactoryTherapist;
-use App\Services\AuthenticationManagementService;
-use App\Services\TherapistManagementService;
-use App\Services\UserManagementService;
+use App\Http\Resources\LoginResource;
+use App\Services\User\AuthenticationManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AuthenticationController extends Controller 
 {
@@ -36,13 +33,20 @@ class AuthenticationController extends Controller
     {
         try{
             $token = $this->service->login($request->validated());
-            return response()->json(['token' => $token]);
+            $dataUser = clone Auth::user();
+            $dataUser->token = $token;
+            return response()->json(new LoginResource($dataUser));
         }catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 401);
         }
     }
-
     
+    public function logout(Request $request): JsonResponse
+    {
+        // ignorar error si aparece es el editor
+       $request->user()->currentAccessToken()->delete(); 
+       return response()->json(['message' => 'logout ok'], 200);
+    }
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
         $this->service->sendResetPasswordLink($request->validated());

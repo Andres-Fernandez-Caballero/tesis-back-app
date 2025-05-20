@@ -13,11 +13,15 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'last_name' => $this->last_name,
             'email' => $this->email,
-            'role' => $this->roles->pluck('name')->first(),
-            'address' => $this->user_data->address,
-            'gender' => $this->user_data->gender,
-            'birth_date' => $this->user_data->birth_date,
+            'userData' => [
+                'dni' => $this->user_data->dni,
+                'role' => $this->roles->pluck('name')->first(),
+                'address' => $this->user_data->address,
+                'gender' => $this->user_data->gender,
+                'birth_date' => $this->user_data->birth_date,     
+            ],
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

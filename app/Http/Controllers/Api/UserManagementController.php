@@ -48,6 +48,7 @@ class UserManagementController extends Controller
 
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
+        // ignorar el error si aparece es el editor
         $user = $this->service->updateProfile($request->user()->id, $request->validated());
         return response()->json(new UserResource($user));
     }
