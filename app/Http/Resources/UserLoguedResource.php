@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
-class LoginResource extends JsonResource
+class UserLoguedResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
