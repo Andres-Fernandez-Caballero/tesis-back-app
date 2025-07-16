@@ -9,18 +9,16 @@ use App\Models\Users\Traits\HasScore;
 use App\Models\Users\Traits\HasTherapist;
 use App\Models\Users\Traits\HasUserData;
 use App\Models\Users\Traits\HasUserFilamentConfig;
-use App\Models\Users\UserData;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\ModelStates\HasStates;
 use Spatie\Permission\Traits\HasRoles;
+use App\Enums\Role;
 
 class User extends Authenticatable implements FilamentUser, HasName
 {
@@ -77,7 +75,12 @@ class User extends Authenticatable implements FilamentUser, HasName
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->hasRole([Role::ADMIN]);
     }
 }

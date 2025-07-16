@@ -82,6 +82,7 @@ class UserResource extends Resource
                     Role::MASSAGE_THERAPIST->value => 'secondary',
                     default => 'secondary',
                 }),
+                Tables\Columns\TextColumn::make('score'),
                 Tables\Columns\TextColumn::make('state')
                 ->formatStateUsing(fn($state) => $state->label())
                 ->color(fn($record) => $record->state->color()),
