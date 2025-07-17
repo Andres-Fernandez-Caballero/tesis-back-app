@@ -22,7 +22,7 @@ class RegisterUserRequest extends FormRequest
             'birth_date' => 'required|date_format:Y-m-d',
             'gender' => 'required | in:male,female,other',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:6|confirmed'
         ];
     }
 }
