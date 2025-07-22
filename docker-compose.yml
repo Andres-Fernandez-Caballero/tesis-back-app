@@ -40,7 +40,7 @@ services:
         networks:
             - sail
         healthcheck:
-            test: 
+            test:
                 - CMD
                 - mysqladmin
                 - ping
@@ -52,13 +52,15 @@ services:
         ports:
             - '9000:80'
         environment:
-            PMA_HOST: mysql
+            PMA_HOST: 'mysql'
             PMA_USER: '${DB_USERNAME}'
-            PMA_PASSWORD: '${DB_PASSWORD}'
+            PMA__PASSWORD: '${DB_PASSWORD}'
         depends_on:
             - mysql
         networks:
             - sail
+        
+
 networks:
     sail:
         driver: bridge
