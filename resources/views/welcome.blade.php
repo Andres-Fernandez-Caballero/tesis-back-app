@@ -20,7 +20,14 @@
                 <a href="#about">About</a>
                 <a href="#testimonials">{{ __('landing.navigation.testimonials') }}</a>
                 <a href="#contact">{{  __('landing.navigation.contact') }}</a>
-                <a href="{{ route('login') }}" class="btn-primary">{{ __('landing.navigation.bookings_now') }}</a>
+                @guest
+                    <a href="{{ route('login') }}" class="btn-primary">{{ __('landing.navigation.bookings_now') }}</a>
+                @else
+                    <a href="{{ Auth::User()->canAccessAdminPanel()  
+                        ?route('filament.admin.pages.dashboard') 
+                        : route('filament.app.pages.dashboard') }}" class="btn-primary"
+                        >Dashboard</a>
+                @endguest
             </nav>
             <div class="mobile-menu">
                 <span></span>

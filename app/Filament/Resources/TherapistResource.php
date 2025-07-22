@@ -31,7 +31,12 @@ class TherapistResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('created_at')
+                ->date()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('user.email'),
+                Tables\Columns\TextColumn::make('user.name'),
             ])
             ->filters([
                 //

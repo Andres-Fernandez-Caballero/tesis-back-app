@@ -18,7 +18,27 @@ trait HasUserFilamentConfig
 {
     public function canAccessPanel(Panel $panel): bool
     {
+        $panelId = $panel->getId();
+        switch ($panelId) {
+            case 'admin':
+                return $this->canAccessAdminPanel();
+                // Agregar más casos para otros paneles si es necesario
+            case 'app':
+                return $this->canAccessAppPanel();
+            default:
+                return false;
+        }
         return $this->hasRole(Role::ADMIN);
+    }
+
+    public function canAccessAdminPanel(): bool
+    {
+        return $this->hasRole(Role::ADMIN);
+    }
+
+    public function canAccessAppPanel(): bool
+    {
+        return $this->hasRole([Role::CLIENT, Role::MASSAGE_THERAPIST]);
     }
 
     public function getFilamentAvatarUrl(): ?string

@@ -40,7 +40,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        if(Auth::user()->canAccessAdminPanel())
+            redirect()->route('filament.admin.pages.dashboard');
+        else    
+            redirect()->route('filament.app.pages.dashboard');
     }
 
     /**
