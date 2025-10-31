@@ -6,6 +6,7 @@ use App\Http\Requests\Therapists\StoreTherapistRequest;
 use App\Models\Therapists\FactoryTherapist;
 use App\Models\Therapists\Therapist;
 use App\Repositories\TherapistRepository;
+use Spatie\Tags\Tag;
 
 class TherapistManagementService
 {
@@ -34,6 +35,13 @@ class TherapistManagementService
             $this->fileStorageService->deleteFile($certificate_file);
             throw new \RuntimeException('Failed to create therapist: ' . $e->getMessage());
         }
+    }
+
+    public function getAllTherapistsTags()
+    {
+        return Tag::all();
+        
+        return $tags->map(fn($tag) => ['id' => $tag->id, 'name' => $tag->name]);
     }
 
     public function getAll()

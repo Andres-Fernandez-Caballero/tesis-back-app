@@ -27,6 +27,11 @@ class TherapistController extends Controller
         return $this->therapistManagementService->getAll();
     }
 
+    public function allTherapistsTags()
+    {
+        return $this->therapistManagementService->getAllTherapistsTags();
+    }
+
     public function getAllMassageTherapists()
     {
         return $this->therapistManagementService->getAllMassageTherapists();

@@ -12,7 +12,11 @@ enum Role:string implements HasLabel
 
     public function getLabel(): ?string
     {
-        return $this->name;
+        return match($this) {
+            Role::ADMIN => 'Administrador',
+            Role::CLIENT => 'Cliente',
+            Role::MASSAGE_THERAPIST => 'Masajista',
+        };
     }
 
     public static function values(): array

@@ -41,23 +41,30 @@ class DatabaseSeeder extends Seeder
             ])->assignRole([Role::CLIENT]);
         }
 
-        User::factory(50)->withUserData()->create()
-            ->each(
-                fn(User $user) => $user->assignRole([Role::CLIENT])
-            );
+        // User::factory(50)->withUserData()->create()
+        //     ->each(
+        //         fn(User $user) => $user->assignRole([Role::CLIENT])
+        //     );
 
-        Therapist::factory(50)->massageTherapist()->create()
-            ->each(
-                function(Therapist $therapist) {
-                    Announcement::factory()->create([
-                        'therapist_id' => $therapist->id,
-                    ])->each(
-                        function(Announcement $announcement) {
-                            $announcement->diciplines = ['Antiestrés', 'Descontracturante'];
+        Therapist::factory()->massageTherapist()->create()->with([
+            'user' => User::factory()->withUserData()->create([
+                'name' => 'Terapeuta',
+                'email' => 'therapist@gmail.com',
+            ])->assignRole(Role::MASSAGE_THERAPIST),
+        ]);
+        
+        // Therapist::factory(50)->massageTherapist()->create()
+        //     ->each(
+        //         function(Therapist $therapist) {
+        //             Announcement::factory()->create([
+        //                 'therapist_id' => $therapist->id,
+        //             ])->each(
+        //                 function(Announcement $announcement) {
+        //                     $announcement->diciplines = ['Antiestrés', 'Descontracturante'];
                             
-                        }
-                    );
-                } 
-            );
+        //                 }
+        //             );
+        //         } 
+        //     );
     }
 }

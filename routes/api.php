@@ -49,5 +49,6 @@ Route::prefix('v1')->group(function() {
         Route::get('/type/{type}', [TherapistController::class, 'getAllTherapistsByType'])->name('therapists.type');
         Route::post('/', [TherapistController::class, 'store'])->name('therapists.store');
         Route::get('/{id}', [TherapistController::class, 'details'])->name('therapists.details');
+        Route::get('/tags/all', [TherapistController::class, 'allTherapistsTags'])->name('therapists.tags');
     });
 }); 
