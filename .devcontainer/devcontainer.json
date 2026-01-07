@@ -1,6 +1,6 @@
 // https://aka.ms/devcontainer.json
 {
-	"name": "Existing Docker Compose (Extend)",
+	"name": "BodyFix Laravel Dev Container",
 	"dockerComposeFile": [
 		"../docker-compose.yml"
 	],
@@ -15,8 +15,11 @@
 		}
 	},
 	"remoteUser": "root",
-	"postCreateCommand": "chown -R 1000:1000 /var/www/html 2>/dev/null || true"
-	// "forwardPorts": [],
+	"postCreateCommand": "chown -R 1000:1000 /var/www/html 2>/dev/null || true",
+	"forwardPorts": [
+		80,
+		3306
+	]
 	// "runServices": [],
 	// "shutdownAction": "none",
 }

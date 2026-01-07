@@ -11,7 +11,7 @@
             "settings": {}
         }
     },
-    "remoteUser": "root",
+    "remoteUser": "sail",
     "forwardPorts": [
         80,
         8000,

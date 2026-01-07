@@ -16,6 +16,7 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
+    --color-bg-body-fix: #ffe250;
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
     --color-zinc-200: #e5e5e5;
@@ -39,16 +40,28 @@
         --color-accent-content: var(--color-white);
         --color-accent-foreground: var(--color-neutral-800);
     }
+    .light {
+        --color-accent: var(--color-neutral-800);
+        --color-accent-content: var(--color-neutral-800);
+        --color-accent-foreground: var(--color-white);
+    }
 }
 
 @layer base {
+    :root {
+        --app-bg: theme(colors.zinc.50);
+    }
 
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
+    .dark {
+        --app-bg: theme(colors.zinc.950);
+    }
+    .light {
+        --app-bg: theme(colors.zinc.50);
+    }
+
+    html, body {
+        background-color: var(--app-bg);
+        @apply text-black dark:text-white;
     }
 }
 
@@ -67,7 +80,7 @@ select:focus[data-flux-control] {
 }
 
 html, body {
-    @apply text-black dark:text-white;
+    @apply bg-white text-black dark:bg-zinc-950 dark:text-white;
 }
 
 /* \[:where(&)\]:size-4 {

@@ -84,8 +84,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
             :title="__('Log in to your account')" 
             :description="__('Enter your email and password below to log in')" 
         />
-
-        <x-theme-toggle />
     </div>
 
     <!-- Session Status -->
