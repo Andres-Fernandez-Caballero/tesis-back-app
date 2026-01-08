@@ -20,9 +20,10 @@ class UserLoguedResource extends JsonResource
             'user' => [
                 'id' => $this->id,
                 'name' => $this->name,
-                'last_name' => $this->last_name,
-                'profile_picture' => $this->user_data->profile_picture,
+                'lastName' => $this->last_name,
+                'profilePicture' => $this->user_data->profile_picture,
                 'email' => $this->email,
+                'role' => $this->roles->pluck('name')->first(),
             ]
         ];
     }
