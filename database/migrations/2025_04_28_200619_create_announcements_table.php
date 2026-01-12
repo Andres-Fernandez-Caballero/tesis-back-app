@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            $table->boolean('is_destactable')->default(false);
+            $table->integer('scoring')->default(0);
             $table->boolean('is_active')->default(true);
             $table->string('title');
             $table->string('description');
             $table->float('price')->default(0);
+            $table->integer('durationInMinutes');
+            $table->string('currency')->default('ARG');
             $table->foreignId('therapist_id')
                 ->constrained()
                 ->cascadeOnDelete();

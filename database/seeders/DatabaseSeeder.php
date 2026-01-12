@@ -4,13 +4,11 @@ namespace Database\Seeders;
 
 use App\Enums\Role;
 use App\Models\Therapists\Announcement;
-use App\Models\Therapists\MassageTherapist;
 use App\Models\Therapists\Therapist;
 use App\Models\User;
-use App\Models\Users\UserData;
 use Database\Seeders\Therapists\TagSeeder;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Tags\Tag;
 
 class DatabaseSeeder extends Seeder
 {
@@ -41,23 +39,27 @@ class DatabaseSeeder extends Seeder
             ])->assignRole([Role::CLIENT]);
         }
 
-        User::factory(50)->withUserData()->create()
+        User::factory(10)->withUserData()->create()
             ->each(
                 fn(User $user) => $user->assignRole([Role::CLIENT])
             );
 
-        Therapist::factory(50)->massageTherapist()->create()
+
+        
+
+        Therapist::factory(10)->massageTherapist()->create()
             ->each(
-                function(Therapist $therapist) {
+                function (Therapist $therapist) {
                     Announcement::factory()->create([
                         'therapist_id' => $therapist->id,
                     ])->each(
-                        function(Announcement $announcement) {
-                            $announcement->diciplines = ['Antiestrés', 'Descontracturante'];
-                            
+                        function (Announcement $announcement) {
+                            $tag = Tag::all()->random()->first();
+                            $announcement->dicipline = $tag->name;
+                            //$announcement->dicipline = "Descontracturante";
                         }
                     );
-                } 
+                }
             );
     }
 }

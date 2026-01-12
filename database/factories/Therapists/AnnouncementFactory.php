@@ -18,11 +18,12 @@ class AnnouncementFactory extends Factory
     public function definition(): array
     {
         return [
-            'is_destactable' => $this->faker->boolean(),
+            'scoring' => $this->faker->numberBetween(0, 1000),
             'is_active' => $this->faker->boolean(),
             'title' => $this->faker->sentence(),
             'description' => 'lorem ipsum dolor sit amet.',
             'price' => $this->faker->randomFloat(2, 1000, 9000),
+            'durationInMinutes' => $this->faker->randomElement([30, 45, 60, 90]),
             'therapist_id' => Therapist::factory(), // Assuming you have a TherapistFactory
         ];
     }

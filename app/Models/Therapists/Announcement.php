@@ -6,14 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Tags\HasTags;
+use Spatie\Tags\Tag;
 
 class Announcement extends Model
 {
     /** @use HasFactory<\Database\Factories\Therapists\AnnouncementFactory> */
     use HasFactory;
-    use HasTags;
+    use HasTags; 
 
     protected $guarded = [];
+
+    protected static function booted(){
+        static::saved(function ($announcement) {
+            // por seguridad de que no se agreguen más de una categoria
+            if ($announcement->tags()->count() > 1) {
+                $announcement->syncTags([$announcement->tags()->first()]);
+            }
+        });
+    }
 
     public function therapist(): BelongsTo
     {
@@ -23,11 +33,11 @@ class Announcement extends Model
     /**
      * Getter personalizado para obtener las disciplinas como array de strings.
      *
-     * @return array
+     * @return Tag
      */
-    public function getDiciplinesAttribute(): array
+    public function getDiciplineAttribute(): Tag
     {
-        return $this->tagsWithType('dicipline')->pluck('name')->toArray();
+        return $this->tagsWithType('dicipline')->first();
     }
 
     /**
@@ -36,10 +46,10 @@ class Announcement extends Model
      * @param array|string $diciplines
      * @return void
      */
-    public function setDiciplinesAttribute(array|string $diciplines): void
+    public function setDiciplineAttribute(string $dicipline): void
     {
         // Normalizar entrada (puede ser string o array)
-        $diciplines = is_array($diciplines) ? $diciplines : [$diciplines];
+        $diciplines = is_array($dicipline) ? $dicipline : [$dicipline];
 
         // Sincroniza los tags del tipo 'dicipline'
         $this->syncTagsWithType($diciplines, 'dicipline');
