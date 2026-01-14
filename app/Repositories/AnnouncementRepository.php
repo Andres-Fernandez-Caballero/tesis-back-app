@@ -10,6 +10,7 @@ class AnnouncementRepository
     {
         $query = Announcement::orderByDesc('scoring');
 
+        
         if ($pagination) {
             return $query->paginate($pagination);
         }

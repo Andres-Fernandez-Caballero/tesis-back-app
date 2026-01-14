@@ -10,17 +10,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AnnoucementController extends Controller
 {
-    public function __construct(private AnnouncementService $announcementService)
-    {
-        //
-    }
+    public function __construct(private AnnouncementService $announcementService) {}
     /**
      * Display a listing of the resource.
      */
     public function index():JsonResponse
     {
-        $announcements = $this->announcementService->getAll(10);
-        return AnnoucementResource::collection($announcements)->response()  ;
+        $announcements = $this->announcementService->getAll();
+        return AnnoucementResource::collection($announcements)->response();
     }
 
     public function destacates():JsonResponse
@@ -30,20 +27,20 @@ class AnnoucementController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
         $announcement = $this->announcementService->findById($id);
         return AnnoucementResource::make($announcement)->response();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
     }
 
     /**

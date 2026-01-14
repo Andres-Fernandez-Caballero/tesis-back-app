@@ -8,7 +8,9 @@ class AnnouncementService
 {
     public function __construct(protected AnnouncementRepository $announcementRepository){}
 
-    public function getAll(int $pagination = 0)
+    private const DEFAULT_PAGINATION = 10;
+
+    public function getAll(int $pagination = self::DEFAULT_PAGINATION)
     {
         return $this->announcementRepository->getAll($pagination);
     }

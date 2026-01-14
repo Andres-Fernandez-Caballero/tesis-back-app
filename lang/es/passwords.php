@@ -13,7 +13,6 @@ return [
     |
     */
 
-<<<<<<< Updated upstream
     'reset' => 'Tu contraseña ha sido restablecida.',
     'sent' => 'Hemos enviado un enlace de restablecimiento de contraseña a tu correo electrónico.',
     'throttled' => 'Por favor, espera antes de volver a intentarlo.',
@@ -21,12 +20,3 @@ return [
     'user' => "No podemos encontrar un usuario con ese correo electrónico.",
 
 ];
-=======
-    'reset' => 'Your password has been reset.',
-    'sent' => 'We have emailed your password reset link.',
-    'throttled' => 'Please wait before retrying.',
-    'token' => 'This password reset token is invalid.',
-    'user' => "We can't find a user with that email address.",
-
-];
->>>>>>> Stashed changes

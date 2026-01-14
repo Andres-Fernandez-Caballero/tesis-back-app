@@ -18,27 +18,27 @@ class TagSeeder extends Seeder
                 [
                     'es' => 'Deportivo',
                     'en' => 'Sport',
-                    'image' => 'tags/diciplines/deportivo.jpg',
+                    'image' => 'tags/diciplines/deportivo.png',
                 ],
                 [
                     'es' => 'Terapéutico',
                     'en' => 'Therapeutic',
-                    'image' => 'tags/diciplines/terapeutico.jpg',
+                    'image' => 'tags/diciplines/terapeutico.png',
                 ],
                 [
                     'es' => 'Antiestrés',
                     'en' => 'Anti-stress',
-                    'image' => 'tags/diciplines/antiestres.jpg',
+                    'image' => 'tags/diciplines/antiestres.png',
                 ],
                 [
                     'es' => 'Descontracturante',
                     'en' => 'Decontracting',
-                    'image' => 'tags/diciplines/descontracturante.jpg',
+                    'image' => 'tags/diciplines/descontracturante.png',
                 ],
                 [
                     'es' => 'Reflexología',
                     'en' => 'Reflexology',
-                    'image' => 'tags/diciplines/reflexologia.jpg',
+                    'image' => 'tags/diciplines/reflexologia.png',
                 ],
             ],
         ];

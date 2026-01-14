@@ -16,8 +16,4 @@ return [
     'previous' => '&laquo; Anterior',
     'next' => 'Siguiente &raquo;',
 
-<<<<<<< Updated upstream
 ];
-=======
-];
->>>>>>> Stashed changes

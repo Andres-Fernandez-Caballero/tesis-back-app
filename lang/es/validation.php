@@ -46,11 +46,7 @@ return [
     'different' => 'El campo :attribute y :other deben ser diferentes.',
     'digits' => 'El campo :attribute debe tener :digits dígitos.',
     'digits_between' => 'El campo :attribute debe estar entre :min y :max dígitos.',
-<<<<<<< Updated upstream
     'dimensions' => 'El campo :attribute tiene dimensiones de imagen inválidas.',
-=======
-    'dimensions' => 'Las dimensiones de la imagen del campo :attribute son inválidas.',
->>>>>>> Stashed changes
     'distinct' => 'El campo :attribute tiene un valor duplicado.',
     'doesnt_end_with' => 'El campo :attribute no debe terminar con uno de los siguientes: :values.',
     'doesnt_start_with' => 'El campo :attribute no debe comenzar con uno de los siguientes: :values.',
@@ -100,15 +96,9 @@ return [
     'mac_address' => 'El campo :attribute debe ser una dirección MAC válida.',
     'max' => [
         'array' => 'El campo :attribute no debe tener más de :max elementos.',
-<<<<<<< Updated upstream
         'file' => 'El campo :attribute no debe ser mayor que :max kilobytes.',
         'numeric' => 'El campo :attribute no debe ser mayor que :max.',
         'string' => 'El campo :attribute no debe ser mayor que :max caracteres.',
-=======
-        'file' => 'El campo :attribute debe ser menor que :max kilobytes.',
-        'numeric' => 'El campo :attribute debe ser menor que :max.',
-        'string' => 'El campo :attribute debe ser menor que :max caracteres.',
->>>>>>> Stashed changes
     ],
     'max_digits' => 'El campo :attribute no debe tener más de :max dígitos.',
     'mimes' => 'El campo :attribute debe ser un archivo de tipo: :values.',
@@ -146,11 +136,7 @@ return [
     'prohibited_if_accepted' => 'El campo :attribute está prohibido cuando :other sea aceptado.',
     'prohibited_if_declined' => 'El campo :attribute está prohibido cuando :other sea rechazado.',
     'prohibited_unless' => 'El campo :attribute está prohibido a menos que :other esté en :values.',
-<<<<<<< Updated upstream
     'prohibits' => 'El campo :attribute prohíbe que :other esté presente.',
-=======
-    'prohibits' => 'El campo :attribute prohibe que :other esté presente.',
->>>>>>> Stashed changes
     'regex' => 'El formato del campo :attribute es inválido.',
     'required' => 'El campo :attribute es requerido.',
     'required_array_keys' => 'El campo :attribute debe contener entradas para: :values.',
@@ -192,11 +178,7 @@ return [
 
     'custom' => [
         'attribute-name' => [
-<<<<<<< Updated upstream
             'rule-name' => 'mensaje personalizado',
-=======
-            'rule-name' => 'mensaje-personalizado',
->>>>>>> Stashed changes
         ],
     ],
 
