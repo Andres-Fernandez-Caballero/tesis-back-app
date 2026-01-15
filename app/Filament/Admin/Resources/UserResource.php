@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Admin\Resources;
 
-use App\Filament\Resources\TherapistResource\Pages;
-use App\Filament\Resources\TherapistResource\RelationManagers;
-use App\Models\Therapists\Therapist;
+use App\Filament\Admin\Resources\UserResource\Pages;
+use App\Filament\Admin\Resources\UserResource\RelationManagers;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TherapistResource extends Resource
+class UserResource extends Resource
 {
-    protected static ?string $model = Therapist::class;
+    protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -31,12 +31,7 @@ class TherapistResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
-                ->date()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('user.email'),
-                Tables\Columns\TextColumn::make('user.name'),
+                //
             ])
             ->filters([
                 //
@@ -61,9 +56,9 @@ class TherapistResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTherapists::route('/'),
-            'create' => Pages\CreateTherapist::route('/create'),
-            'edit' => Pages\EditTherapist::route('/{record}/edit'),
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }

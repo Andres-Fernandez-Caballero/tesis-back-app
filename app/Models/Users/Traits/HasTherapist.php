@@ -11,7 +11,7 @@ trait HasTherapist
 {
     public function therapist(): HasOne
     {
-        return $this->belongsTo(Therapist::class);
+        return $this->hasOne(Therapist::class);
     }
 
     public function isTherapist(): bool

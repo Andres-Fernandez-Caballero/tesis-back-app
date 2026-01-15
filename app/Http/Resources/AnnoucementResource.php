@@ -19,7 +19,7 @@ class AnnoucementResource extends JsonResource
             'scoring' => $this->scoring,
             'title' => $this->title,
             'content' => $this->content ?? "",
-            'duration' => $this->durationInMinutes,
+            'duration' => $this->duration_in_minutes,
             'currency' => $this->currency,
             'therapist' => TherapistResource::make($this->therapist),
             'price' => $this->price,

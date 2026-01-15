@@ -14,7 +14,7 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         $tags = [
-            'dicipline' => [
+            'discipline ' => [
                 [
                     'es' => 'Deportivo',
                     'en' => 'Sport',

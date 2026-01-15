@@ -39,6 +39,24 @@ class DatabaseSeeder extends Seeder
             ])->assignRole([Role::CLIENT]);
         }
 
+        // crea un terapeuta de pruebas si no existe
+        if (!User::where('email', 'therapist@gmail.com')->exists()) {
+            $therapistUser = User::factory()->withUserData()->create([
+                'name' => 'Terapeuta',
+                'email' => 'therapist@gmail.com',
+            ])->assignRole([Role::MASSAGE_THERAPIST]);
+
+            $therapist = Therapist::factory()->massageTherapist()->create([
+                'user_id' => $therapistUser->id,
+            ]);
+
+            $announcement = Announcement::factory()->create([
+                'therapist_id' => $therapist->id,
+            ]);
+
+            $announcement->dicipline = Tag::all()->random()->first()->name;
+        }
+
         User::factory(10)->withUserData()->create()
             ->each(
                 fn(User $user) => $user->assignRole([Role::CLIENT])

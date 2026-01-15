@@ -37,7 +37,7 @@ class Announcement extends Model
      */
     public function getDiciplineAttribute(): Tag
     {
-        return $this->tagsWithType('dicipline')->first();
+        return $this->tagsWithType('discipline ')->first();
     }
 
     /**
@@ -52,6 +52,6 @@ class Announcement extends Model
         $diciplines = is_array($dicipline) ? $dicipline : [$dicipline];
 
         // Sincroniza los tags del tipo 'dicipline'
-        $this->syncTagsWithType($diciplines, 'dicipline');
+        $this->syncTagsWithType($diciplines, 'discipline ');
     }
 }

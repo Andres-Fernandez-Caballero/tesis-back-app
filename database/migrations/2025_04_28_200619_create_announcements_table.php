@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('description');
             $table->float('price')->default(0);
-            $table->integer('durationInMinutes');
+            $table->integer('duration_in_minutes');
             $table->string('currency')->default('ARG');
             $table->foreignId('therapist_id')
                 ->constrained()
