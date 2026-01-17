@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\ForgotPasswordRequest;
 use App\Http\Requests\Users\LoginRequest;
-use App\Http\Requests\Users\RegisterUserRequest;
+use App\Http\Requests\Users\RegisterUserClientRequest;
+use App\Http\Requests\Users\RegisterUserTherapistRequest;
 use App\Http\Resources\UserLoguedResource;
 use App\Services\User\AuthenticationManagementService;
 use Illuminate\Http\JsonResponse;
@@ -19,17 +20,32 @@ class AuthenticationController extends Controller
     public function __construct(
         protected readonly AuthenticationManagementService $service
     ) {}
+    
     /**
      * Register a new user type client or therapist
-     * @param \App\Http\Requests\Users\RegisterUserRequest $request
+     * @param \App\Http\Requests\Users\RegisterUserClientRequest $request
      * @return JsonResponse|mixed
      */
-    public function register(RegisterUserRequest $request): JsonResponse
+    public function registerClient(RegisterUserClientRequest $request): JsonResponse
     {
-        $token = $this->service->registerUser($request->validated());
+        $token = $this->service->registerUser($request->validated(), Role::CLIENT);
         $dataUser = clone Auth::user();
         $dataUser->token = $token;
 
+        return response()->json(new UserLoguedResource($dataUser), 201);
+    }
+    
+    /**
+     * Register a new user type client or therapist
+     * @param \App\Http\Requests\Users\RegisterUserTherapistRequest $request
+     * @return JsonResponse|mixed
+     */
+    public function registerTherapist(RegisterUserTherapistRequest $request): JsonResponse
+    {
+        $token = $this->service->registerUser($request->validated(), Role::MASSAGE_THERAPIST);
+        $dataUser = clone Auth::user();
+        $dataUser->token = $token;
+        
         return response()->json(new UserLoguedResource($dataUser), 201);
     }
 

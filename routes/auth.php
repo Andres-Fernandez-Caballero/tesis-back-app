@@ -7,9 +7,12 @@ use Livewire\Volt\Volt;
 Route::middleware('guest')->group(function () {
     Volt::route('login', 'auth.login')
         ->name('login');
+    
+    Volt::route('register/client', 'auth.registerClient')
+        ->name('register.client');
 
-    Volt::route('register', 'auth.register')
-        ->name('register');
+    Volt::route('register/therapist', 'auth.registerTherapist')
+        ->name('register.therapist');
 
     Volt::route('forgot-password', 'auth.forgot-password')
         ->name('password.request');

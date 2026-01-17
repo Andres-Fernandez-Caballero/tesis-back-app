@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\UpdateProfileRequest;
-use App\Http\Requests\Users\RegisterUserRequest;
 use App\Http\Requests\Users\ForgotPasswordRequest;
 use App\Http\Requests\Users\LoginRequest;
 use App\Http\Resources\UserResource;

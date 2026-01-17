@@ -53,21 +53,6 @@ class UserRepository
         return User::findOrFail($id);
     }
 
-    public function create(array $data)
-    {
-        try {
-            DB::beginTransaction();
-            $user = User::create($data);
-            $user->user_data()->create($data);
-
-            DB::commit();
-            return $user;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
     public function update(int $id, array $data)
     {
         $user = User::findOrFail($id);

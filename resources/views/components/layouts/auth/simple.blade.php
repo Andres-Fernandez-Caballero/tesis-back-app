@@ -4,7 +4,7 @@
         @include('partials.head')
     </head>
     <body class="min-h-screen antialiased text-black">
-        <div style="background-color: #ffe250;" class="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+        <div style="background-color: #FF8C00;" class="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <div class="flex w-full max-w-sm flex-col gap-2">
                 <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 font-medium text-black" wire:navigate>
                     <span class="flex h-20 w-20 mb-1 items-center justify-center rounded-md">
