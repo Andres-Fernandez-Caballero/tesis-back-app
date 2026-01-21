@@ -2,12 +2,11 @@
 
 namespace App\Core\forms;
 
-use Doctrine\DBAL\Query\From;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Spatie\Tags\Tag;
 
-trait CreateAnnouncementForm
+trait HasAnnouncementForm
 {
     public static function form(Form $form): Form
     {

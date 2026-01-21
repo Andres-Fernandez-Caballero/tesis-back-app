@@ -38,6 +38,16 @@ class Therapist extends Model
         return $this->hasMany(Announcement::class);
     }
 
+    public function availabilities(): HasMany
+    {
+        return $this->hasMany(Availability::class);
+    }
+
+    public function availabilyExceptions(): HasMany
+    {
+        return $this->hasMany(AvailabilityException::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

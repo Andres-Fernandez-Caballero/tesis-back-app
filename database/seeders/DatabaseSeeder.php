@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Models\Therapists\Announcement;
 use App\Models\Therapists\Therapist;
 use App\Models\User;
+use Database\Seeders\Therapists\AvailabilitySeeder;
 use Database\Seeders\Therapists\TagSeeder;
 use Illuminate\Database\Seeder;
 use Spatie\Tags\Tag;
@@ -79,5 +80,7 @@ class DatabaseSeeder extends Seeder
                     );
                 }
             );
+
+        $this->call(AvailabilitySeeder::class);
     }
 }

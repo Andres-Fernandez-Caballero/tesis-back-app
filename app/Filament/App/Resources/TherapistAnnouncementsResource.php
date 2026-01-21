@@ -2,10 +2,8 @@
 
 namespace App\Filament\App\Resources;
 
-use App\Core\forms\CreateAnnouncementForm;
+use App\Core\forms\HasAnnouncementForm;
 use App\Filament\App\Resources\TherapistAnnouncementsResource\Pages;
-use App\Filament\App\Resources\TherapistAnnouncementsResource\RelationManagers;
-use App\Models\TherapistAnnouncements;
 use App\Models\Therapists\Announcement;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -15,23 +13,23 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TherapistAnnouncementsResource extends Resource
 {
-    use CreateAnnouncementForm;
+    use HasAnnouncementForm;
 
     protected static ?string $model = Announcement::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
-{
-    return __('announcement.label');
-}
-    
-    
+    {
+        return __('announcement.label');
+    }
+
+
     public static function table(Table $table): Table
     {
         return $table
             ->query(function (Builder $query) {
-                return auth()->user()->therapist?->announcements(); 
+                return auth()->user()->therapist?->announcements();
             })
             ->columns([
                 Tables\Columns\TextColumn::make('title')->label('Título')->searchable()->sortable(),
