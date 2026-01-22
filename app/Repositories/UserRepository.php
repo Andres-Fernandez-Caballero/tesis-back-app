@@ -65,4 +65,9 @@ class UserRepository
         $user = User::findOrFail($id);
         $user->delete();
     }
+
+    public function create(array $data)
+    {
+        return User::create($data);
+    }
 }

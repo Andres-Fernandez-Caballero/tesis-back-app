@@ -23,7 +23,7 @@ class AnnouncementFactory extends Factory
             'title' => $this->faker->sentence(),
             'description' => 'lorem ipsum dolor sit amet.',
             'price' => $this->faker->randomFloat(2, 1000, 9000),
-            'duration_in_minutes' => $this->faker->randomElement([30, 45, 60, 90]),
+            'duration_in_minutes' => $this->faker->randomElement([ 60, 120]),
             'therapist_id' => Therapist::factory(), // Assuming you have a TherapistFactory
         ];
     }

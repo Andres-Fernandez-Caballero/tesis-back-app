@@ -5,6 +5,8 @@ namespace App\Repositories;
 use App\Models\Therapists\Availability;
 use App\Models\Therapists\AvailabilityException;
 use App\Models\Therapists\Booking;
+use App\Models\Therapists\States\Booking\BookingConfirmed;
+use App\Models\Therapists\States\Booking\BookingPending;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -47,7 +49,8 @@ class AvailabilityRepository
         return Booking::query()
             ->where('therapist_id', $therapistId)
             ->whereDate('date', $date->toDateString())
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereState('state', BookingPending::class)
+            ->orWhereState('state', BookingConfirmed::class)
             ->get();
     }
 

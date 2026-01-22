@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aeeb45d2f9de751f19a9653603ef05ca",
+    "content-hash": "036fc7534fe32e2cb741acd51a353973",
     "packages": [
         {
             "name": "amphp/amp",
@@ -6160,16 +6160,16 @@
         },
         {
             "name": "spatie/laravel-model-states",
-            "version": "2.11.2",
+            "version": "2.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-model-states.git",
-                "reference": "120458fc7a29cf16f18757ff457fb14c04a81c79"
+                "reference": "13cccd3ecb4396c9a3360fb710d9dd40c0f1a1fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-model-states/zipball/120458fc7a29cf16f18757ff457fb14c04a81c79",
-                "reference": "120458fc7a29cf16f18757ff457fb14c04a81c79",
+                "url": "https://api.github.com/repos/spatie/laravel-model-states/zipball/13cccd3ecb4396c9a3360fb710d9dd40c0f1a1fe",
+                "reference": "13cccd3ecb4396c9a3360fb710d9dd40c0f1a1fe",
                 "shasum": ""
             },
             "require": {
@@ -6220,7 +6220,7 @@
                 "state"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-model-states/tree/2.11.2"
+                "source": "https://github.com/spatie/laravel-model-states/tree/2.12.1"
             },
             "funding": [
                 {
@@ -6232,7 +6232,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-21T09:04:07+00:00"
+            "time": "2025-08-01T09:20:29+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -11472,5 +11472,5 @@
         "php": "^8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

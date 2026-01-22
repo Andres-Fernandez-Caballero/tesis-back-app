@@ -2,15 +2,22 @@
 
 namespace App\Models\Therapists;
 
+use App\Models\Therapists\States\Booking\BookingState;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\ModelStates\HasStates;
 
 class Booking extends Model
 {
     /** @use HasFactory<\Database\Factories\Therapists\BookingFactory> */
     use HasFactory;
+    use HasStates;
+
+    protected $casts = [
+        'state' => BookingState::class, 
+    ];
 
     protected $guarded = [];
 
