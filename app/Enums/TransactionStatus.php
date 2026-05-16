@@ -4,10 +4,12 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum PaymentMethod: string implements HasLabel
+enum TransactionStatus: string implements HasLabel
 {
-    case MERCADO_PAGO = 'mercado_pago';
-    case FAKE = 'fake'; // Método de pago simulado para pruebas
+    case PENDING = 'pending';
+    case COMPLETED = 'completed';
+    case FAILED = 'failed';
+    case REFUNDED = 'refunded';
 
     public function getLabel(): ?string
     {

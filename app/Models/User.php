@@ -19,6 +19,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\ModelStates\HasStates;
 use Spatie\Permission\Traits\HasRoles;
 use App\Enums\Role;
+use App\Models\Users\Traits\HasNotifications;
 
 class User extends Authenticatable implements FilamentUser, HasName
 {
@@ -30,6 +31,7 @@ class User extends Authenticatable implements FilamentUser, HasName
     use HasScore;
     use HasUserData;
     use HasTherapist;
+    use HasNotifications;
     /**
      * The attributes that are mass assignable.
      *

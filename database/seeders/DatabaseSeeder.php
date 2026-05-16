@@ -51,13 +51,16 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $therapistUser->id,
             ]);
 
-            $announcement = Announcement::factory()->create([
+            $announcement = Announcement::factory()
+            ->count(4)
+            
+            ->create([
                 'therapist_id' => $therapist->id,
-            ]);
-
-            $announcement->dicipline = Tag::all()->random()->first()->name;
+            ])
+            ->each(fn($announcement) => $announcement->dicipline = Tag::all()->random()->first()->name);
         }
 
+        /*
         User::factory(10)->withUserData()->create()
             ->each(
                 fn(User $user) => $user->assignRole([Role::CLIENT])
@@ -80,7 +83,7 @@ class DatabaseSeeder extends Seeder
                     );
                 }
             );
-
+        */
         $this->call(AvailabilitySeeder::class);
     }
 }

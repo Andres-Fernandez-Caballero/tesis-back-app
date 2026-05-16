@@ -20,7 +20,7 @@ class BookingController extends Controller
 
         $client = $request->user();
         $booking = $this->service->createBooking($data, $client);
-        
+
         return response()->json($booking, 201);
     }
 
@@ -28,7 +28,7 @@ class BookingController extends Controller
     {
         $pagination = $request->query('pagination', 10);
         $bookings = $this->service->getAllBookings((int)$pagination);
-        return response()->json($bookings);
+        return BookingResource::collection($bookings);
     }
 
     public function showClientBookings(Request $request)

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->string('title');
             $table->string('description');
-            $table->float('price')->default(0);
+            $table->decimal('price', 10, 2)->default(0);
             $table->integer('duration_in_minutes');
             $table->string('currency')->default('ARG');
             $table->foreignId('therapist_id')
