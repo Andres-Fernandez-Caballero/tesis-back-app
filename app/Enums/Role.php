@@ -8,7 +8,8 @@ enum Role:string implements HasLabel
 {
     case ADMIN = 'admin';
     case CLIENT = 'client';
-    case MASSAGE_THERAPIST ='massage_therapist';
+    case MASSAGE_THERAPIST = 'massage_therapist';
+    case SPA_OWNER = 'spa_owner';
 
     public function getLabel(): ?string
     {

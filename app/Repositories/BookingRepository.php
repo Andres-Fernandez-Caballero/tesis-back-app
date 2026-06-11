@@ -14,7 +14,8 @@ class BookingRepository
 
     public function getAll(int $pagination = 10)
     {
-        $query = Booking::orderByDesc('created_at');
+        $query = Booking::with(['therapist.user', 'annuncement'])
+            ->orderByDesc('created_at');
         if ($pagination) {
             return $query->paginate($pagination);
         }
@@ -24,7 +25,8 @@ class BookingRepository
 
     public function getByClientId(int $clientId, int $pagination = 10)
     {
-        $query = Booking::where('user_id', $clientId)
+        $query = Booking::with(['therapist.user', 'annuncement', 'local', 'especialidad', 'review'])
+            ->where('user_id', $clientId)
             ->orderByDesc('created_at');
         if ($pagination) {
             return $query->paginate($pagination);

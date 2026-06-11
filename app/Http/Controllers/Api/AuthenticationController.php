@@ -57,7 +57,7 @@ class AuthenticationController extends Controller
             $dataUser->token = $token;
             return response()->json(new UserLoguedResource($dataUser));
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(['message' => 'Credenciales incorrectas. Verificá tu email y contraseña.'], 401);
         }
     }
 

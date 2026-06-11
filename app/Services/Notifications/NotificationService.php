@@ -4,6 +4,7 @@ namespace App\Services\Notifications;
 
 use App\Models\NotificationToken;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class NotificationService
@@ -26,25 +27,55 @@ class NotificationService
 
     public function registerToken(User $user, array $data)
     {
-        NotificationToken::updateOrCreate([
-            'user_id' => $user->id,
-            'platform' => $data['platform'],
-            'endpoint' => $data['endpoint'] ?? null,
-            'keys' => $data['keys'] ?? null,
-            'token' => $data['token'] ?? null,
-        ]);
+        $platform = $data['platform'];
+
+        if ($platform === 'web') {
+            // Web push: el endpoint es el identificador único de la suscripción
+            NotificationToken::updateOrCreate(
+                ['endpoint' => $data['endpoint']],
+                [
+                    'user_id'  => $user->id,
+                    'platform' => $platform,
+                    'keys'     => $data['keys'] ?? null,
+                    'token'    => null,
+                ]
+            );
+        } else {
+            // iOS / Android: un token por usuario+plataforma
+            NotificationToken::updateOrCreate(
+                ['user_id' => $user->id, 'platform' => $platform],
+                [
+                    'token'    => $data['token'] ?? null,
+                    'endpoint' => null,
+                    'keys'     => null,
+                ]
+            );
+        }
     }
 
-    public function send(User $user, string $title, string $body, ?string $url = null)
+    public function send(User $user, string $title, string $body, ?string $url = null, array $data = []): void
     {
+        $user->notificationTokens()->each(function (NotificationToken $token) use ($title, $body, $url, $data) {
+            try {
+                Log::info('sending notification', ['platform' => $token->platform, 'title' => $title]);
 
-        $user->notificationTokens()->each(function (NotificationToken $notificationToken) use ($title, $body, $url) {
-            Log::info('token notificado', [
-                'token' => $notificationToken,
-                'title' => $title,
-            ]);
-
-            $this->webPush->sendNotification($notificationToken, $title, $body, $url);
+                if ($token->platform === 'web' && $token->endpoint) {
+                    $this->webPush->sendNotification($token, $title, $body, $url);
+                } elseif (in_array($token->platform, ['ios', 'android']) && $token->token) {
+                    Http::post('https://exp.host/api/v2/push/send', [
+                        'to'    => $token->token,
+                        'title' => $title,
+                        'body'  => $body,
+                        'sound' => 'default',
+                        'data'  => array_merge($data, $url ? ['url' => $url] : []),
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Error sending push notification', [
+                    'token_id' => $token->id,
+                    'error'    => $e->getMessage(),
+                ]);
+            }
         });
     }
 }

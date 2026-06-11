@@ -23,11 +23,8 @@ class StoreAvailabilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'day_of_week' => [
-                'required',
-                'integer',
-                'between:1,7',
-            ],
+            'day_of_week'   => ['required', 'array', 'min:1'],
+            'day_of_week.*' => ['integer', 'between:1,7'],
 
             'start_time' => [
                 'required',
@@ -53,13 +50,16 @@ class StoreAvailabilityRequest extends FormRequest
     public function withValidator($validator)
 {
     $validator->after(function ($validator) {
-        $exists = Availability::where('therapist_id', $this->therapist_id)
-            ->where('day_of_week', $this->day_of_week)
-            ->where(function ($q) {
-                $q->where('start_time', '<', $this->end_time)
-                  ->where('end_time', '>', $this->start_time);
-            })
-            ->exists();
+        $days = (array) $this->day_of_week;
+        $exists = false;
+        foreach ($days as $day) {
+            $exists = Availability::where('therapist_id', $this->therapist_id)
+                ->whereJsonContains('day_of_week', (int) $day)
+                ->where('start_time', '<', $this->end_time)
+                ->where('end_time', '>', $this->start_time)
+                ->exists();
+            if ($exists) break;
+        }
 
         if ($exists) {
             $validator->errors()->add(

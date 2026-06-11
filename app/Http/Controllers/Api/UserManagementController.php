@@ -7,9 +7,11 @@ use App\Http\Requests\Users\UpdateProfileRequest;
 use App\Http\Requests\Users\ForgotPasswordRequest;
 use App\Http\Requests\Users\LoginRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserProfileResource;
 use App\Services\UserManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class UserManagementController extends Controller
 {
@@ -39,18 +41,25 @@ class UserManagementController extends Controller
     }
     
 
-    public function viewProfile(Request $request): JsonResponse
+    public function show(Request $request): JsonResponse
     {
         $user = $this->service->getProfile($request->user()->id);
-        return response()->json(new UserResource($user));
+        return response()->json(new UserProfileResource($user));
     }
 
-    public function updateProfile(UpdateProfileRequest $request): JsonResponse
+    public function update(UpdateProfileRequest $request): JsonResponse
     {
-        // ignorar el error si aparece es el editor
         $user = $this->service->updateProfile($request->user()->id, $request->validated());
-        return response()->json(new UserResource($user));
+        return response()->json(new UserProfileResource($user));
     }
 
-    
+    public function uploadPhoto(Request $request): JsonResponse
+    {
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
+        ]);
+
+        $user = $this->service->uploadProfilePhoto($request->user()->id, $request->file('photo'));
+        return response()->json(new UserProfileResource($user));
+    }
 }

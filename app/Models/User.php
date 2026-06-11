@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Local;
 use App\Models\Users\States\AbstractUserState;
 use App\Models\Users\Traits\HasScore;
 use App\Models\Users\Traits\HasTherapist;
@@ -42,6 +43,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         'last_name',
         'email',
         'password',
+        'must_change_password',
     ];
 
     /**
@@ -62,10 +64,11 @@ class User extends Authenticatable implements FilamentUser, HasName
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'state' => AbstractUserState::class,
-            'banned_to' => 'datetime',
+            'email_verified_at'    => 'datetime',
+            'password'             => 'hashed',
+            'state'                => AbstractUserState::class,
+            'banned_to'            => 'datetime',
+            'must_change_password' => 'boolean',
         ];
     }
 
@@ -84,5 +87,10 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function getIsAdminAttribute(): bool
     {
         return $this->hasRole([Role::ADMIN]);
+    }
+
+    public function local(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Local::class);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models\Therapists;
 
+use App\Models\Especialidad;
+use App\Models\Local;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -54,5 +56,20 @@ class Therapist extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function local(): BelongsTo
+    {
+        return $this->belongsTo(Local::class);
+    }
+
+    public function especialidades(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(
+            Especialidad::class,
+            'especialidad_therapist',
+            'therapist_id',     // FK de este modelo en la pivot
+            'especialidad_id'   // FK del otro modelo en la pivot
+        );
     }
 }

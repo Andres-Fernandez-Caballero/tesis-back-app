@@ -23,5 +23,8 @@ Route::prefix('users')->group(function () {
 
         Route::put('/me', [UserManagementController::class, 'update'])
             ->name('users.update');
+
+        Route::post('/me/photo', [UserManagementController::class, 'uploadPhoto'])
+            ->name('users.photo');
     });
 });

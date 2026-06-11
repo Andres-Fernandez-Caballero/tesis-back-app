@@ -15,8 +15,11 @@ trait HasScore
 
     public function getScoreAttribute(): int
     {
-        $score = $this->_scores()->sum('starts')/$this->_scores()->count() ?? 0;
-        return intval($score);
+        $count = $this->_scores()->count();
+        if ($count === 0) {
+            return 0;
+        }
+        return intval($this->_scores()->sum('starts') / $count);
     }
 
     public function getScoreCountAttribute(): int

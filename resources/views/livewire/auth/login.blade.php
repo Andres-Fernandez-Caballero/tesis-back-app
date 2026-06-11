@@ -130,11 +130,4 @@ new #[Layout('components.layouts.auth')] class extends Component {
             <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
         </div>
     </form>
-    <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
-        {{ __('auth.dont_have_account') }}
-        <div class="flex gap-1 justify-center items-center">
-            <flux:link :href="route('register.client')" wire:navigate>{{ __('routes.register.client') }}</flux:link>
-            <flux:link :href="route('register.therapist')" wire:navigate>{{ __('routes.register.therapist') }}</flux:link>
-        </div>
-    </div>
 </div>

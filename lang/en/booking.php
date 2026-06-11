@@ -19,4 +19,12 @@ return [
         'label' => 'Cancelled',
         'description' => 'Your booking has been cancelled.',
     ],
+    'expired' => [
+        'label' => 'Expired',
+        'description' => 'Your booking request expired because the appointment date passed without confirmation.',
+    ],
+    'pending_payment' => [
+        'label' => 'Pending payment',
+        'description' => 'The booking is waiting for the deposit payment confirmation.',
+    ],
 ];

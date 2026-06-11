@@ -19,4 +19,12 @@ return [
         'label' => 'Cancelada',
         'description' => 'Su reserva ha sido cancelada.',
     ],
+    'expired' => [
+        'label' => 'Expirada',
+        'description' => 'Su solicitud expiró porque la fecha del turno ya pasó sin ser confirmada.',
+    ],
+    'pending_payment' => [
+        'label' => 'Pendiente de pago',
+        'description' => 'La reserva está esperando la confirmación del pago de la seña.',
+    ],
 ];

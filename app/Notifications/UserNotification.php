@@ -18,6 +18,7 @@ class UserNotification extends Notification implements ShouldQueue
         public ?string $url = null,
         public ?string $view = null,
         public array $viewData = [],
+        public array $data = [],
     ) {}
 
     public function via(object $notifiable): array
@@ -43,8 +44,9 @@ class UserNotification extends Notification implements ShouldQueue
     {
         return [
             'title' => $this->title,
-            'body' => $this->body,
-            'url' => $this->url,
+            'body'  => $this->body,
+            'url'   => $this->url,
+            'data'  => $this->data,
         ];
     }
 
@@ -52,8 +54,9 @@ class UserNotification extends Notification implements ShouldQueue
     {
         return [
             'title' => $this->title,
-            'body' => $this->body,
-            'url' => $this->url,
+            'body'  => $this->body,
+            'url'   => $this->url,
+            'data'  => $this->data,
         ];
     }
 }

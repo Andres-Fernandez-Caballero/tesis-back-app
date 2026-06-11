@@ -8,9 +8,9 @@ class AnnouncementRepository
 {
     public function getAll(int $pagination = 0)
     {
-        $query = Announcement::orderByDesc('scoring');
+        $query = Announcement::with(['therapist.user', 'therapist.user.score', 'tags'])
+            ->orderByDesc('scoring');
 
-        
         if ($pagination) {
             return $query->paginate($pagination);
         }
@@ -20,12 +20,14 @@ class AnnouncementRepository
 
     public function findById(string $id)
     {
-        return Announcement::findOrFail($id);
+        return Announcement::with(['therapist.user', 'therapist.user.score', 'tags'])
+            ->findOrFail($id);
     }
 
     public function getDestacates(int $cuantity)
     {
-        return Announcement::where('is_active', true)
+        return Announcement::with(['therapist.user', 'therapist.user.score', 'tags'])
+            ->where('is_active', true)
             ->orderByDesc('scoring')
             ->limit($cuantity)
             ->get();

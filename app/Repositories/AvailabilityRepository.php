@@ -21,7 +21,7 @@ class AvailabilityRepository
     ): Collection {
         return Availability::query()
             ->where('therapist_id', $therapistId)
-            ->where('day_of_week', $dayOfWeekIso)
+            ->whereJsonContains('day_of_week', $dayOfWeekIso)
             ->orderBy('start_time')
             ->get();
     }
@@ -66,7 +66,7 @@ class AvailabilityRepository
     ): bool {
         return Availability::query()
             ->where('therapist_id', $therapistId)
-            ->where('day_of_week', $dayOfWeekIso)
+            ->whereJsonContains('day_of_week', $dayOfWeekIso)
             ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
             ->where(function ($query) use ($startTime, $endTime) {
                 $query

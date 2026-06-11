@@ -38,7 +38,7 @@ trait HasUserFilamentConfig
 
     public function canAccessAppPanel(): bool
     {
-        return $this->hasRole([Role::CLIENT, Role::MASSAGE_THERAPIST]);
+        return $this->hasRole([Role::CLIENT, Role::MASSAGE_THERAPIST, Role::SPA_OWNER]);
     }
 
     public function getFilamentAvatarUrl(): ?string

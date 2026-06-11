@@ -26,13 +26,17 @@ class PaymentsController extends Controller
             );
             DB::commit();
             return response()->json([
-                'message' => 'Pago procesado exitosamente',
-                'payment' => $paymentResult,
+                'message' => 'Payment initiated',
+                'payment_url' => $paymentResult->payment_url,
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Payment processing error', [
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
             return response()->json([
-                'message' => 'Error al procesar el pago: ' . $e->getMessage(),
+                'message' => 'No se pudo procesar el pago. Por favor intentá de nuevo.',
             ], 500);
         }
     }

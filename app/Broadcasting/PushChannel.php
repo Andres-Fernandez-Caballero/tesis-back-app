@@ -25,9 +25,10 @@ class PushChannel
         $this->pushNotificationService->send(
             user: $notifiable,
             title: $data['title'],
-            body: $data['body'],
-            url: $data['url'] ?? null
-         );
+            body:  $data['body'],
+            url:   $data['url'] ?? null,
+            data:  $data['data'] ?? [],
+        );
     }
 
 

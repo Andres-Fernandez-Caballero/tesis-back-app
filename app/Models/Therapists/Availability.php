@@ -13,6 +13,19 @@ class Availability extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'day_of_week' => 'array',
+    ];
+
+    public function setDayOfWeekAttribute(mixed $value): void
+    {
+        // Normalize to an array of integers regardless of input type
+        $days = is_array($value) ? $value : json_decode($value ?? '[]', true);
+        $this->attributes['day_of_week'] = json_encode(
+            array_values(array_map('intval', (array) $days))
+        );
+    }
+
     public function therapist(): BelongsTo
     {
         return $this->belongsTo(Therapist::class);

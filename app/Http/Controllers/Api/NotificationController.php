@@ -79,19 +79,19 @@ class NotificationController extends Controller
     public function markAsRead(Request $request, $id)
     {
         $user = $request->user();
-        $notification = $user->notifications->findOrFail($id);
+        $notification = $user->notifications()->find($id);
 
-        if ($notification->read_at != null) {
-            return response([
-                "message" => "Notification was marked"
-            ]);
+        if (! $notification) {
+            return response()->json(['message' => 'Notificación no encontrada.'], 404);
+        }
+
+        if ($notification->read_at !== null) {
+            return response()->json(['message' => 'La notificación ya estaba marcada como leída.']);
         }
 
         $notification->markAsRead();
 
-        return response([
-            "message" => "Notification marked as Read",
-        ]);
+        return response()->json(['message' => 'Notificación marcada como leída.']);
     }
 
     public function markAllAsRead(Request $request)

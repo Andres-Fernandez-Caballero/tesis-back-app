@@ -24,7 +24,7 @@ class BookingCreateRequest extends FormRequest
         return [
             'therapist_id' => 'required|integer|exists:users,id',
             'announcement_id' => 'required|integer|exists:announcements,id',
-            'date' => 'required|date_format:Y-m-d',
+            'date' => 'required|date_format:Y-m-d|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'notes' => 'nullable|string|max:1000',
