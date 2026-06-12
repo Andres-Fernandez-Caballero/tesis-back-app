@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingCreateRequest;
 use App\Http\Resources\BookingResource;
 use App\Models\Therapists\Booking;
+use App\Models\Therapists\States\Booking\BookingCancelled;
 use App\Models\Therapists\States\Booking\BookingPendingPayment;
 use App\Services\BookingService;
 use App\Services\MercadoPagoService;
@@ -105,5 +106,26 @@ class BookingController extends Controller
             'state'          => 'pending_payment',
             'payment_status' => 'pending',
         ]);
+    }
+
+    /**
+     * POST /api/v1/bookings/{booking}/cancel-pending
+     *
+     * Cancela una reserva en estado pending_payment.
+     * Se llama cuando el usuario cierra el checkout de Mercado Pago sin completar el pago.
+     */
+    public function cancelPending(Request $request, Booking $booking): JsonResponse
+    {
+        if ($booking->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'No autorizado.'], 403);
+        }
+
+        if ($booking->getRawOriginal('state') !== BookingPendingPayment::$name) {
+            return response()->json(['message' => 'La reserva no está pendiente de pago.'], 422);
+        }
+
+        $booking->state->transitionTo(BookingCancelled::class);
+
+        return response()->json(['message' => 'Reserva cancelada.']);
     }
 }
