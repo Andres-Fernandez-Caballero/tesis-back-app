@@ -2,16 +2,12 @@
 
 namespace App\Services;
 
-use App\Enums\PaymentStatus;
-use App\Enums\TransactionStatus;
 use App\Models\Payments\Payment;
 use App\Models\Therapists\Booking;
-use App\Models\Therapists\States\Booking\BookingCancelled;
-use App\Models\Therapists\States\Booking\BookingConfirmed;
-use App\Models\Therapists\States\Booking\BookingPending;
 use App\Notifications\UserNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use MercadoPago\Client\Payment\PaymentClient;
+use MercadoPago\Client\MerchantOrder\MerchantOrderClient;
 use MercadoPago\Client\Payment\PaymentRefundClient;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\MercadoPagoConfig;
@@ -24,51 +20,41 @@ class MercadoPagoService
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Crea una preference de Checkout Pro y devuelve la URL de pago.
+    // Crea una preference de Checkout Pro y devuelve un array con la URL de pago.
+    // return ['init_point', 'preference_id']
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function createPreference(Booking $booking): string
+    public function createPreference(Booking $booking): array
     {
-        $booking->loadMissing('especialidad');
-
-        $title = $booking->especialidad
-            ? "Seña — {$booking->especialidad->nombre}"
-            : 'Seña — BodyFix';
-
+        MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
         // back_urls apuntan al deep link de la app mobile.
         // bodyfix:// es el scheme registrado en app.json — MP lo acepta como back_url
         // para apps mobile y funciona tanto en Expo Go (que registra el scheme) como
         // en builds standalone. El browser in-app (openAuthSessionAsync) detecta
         // el redirect a este scheme y cierra el checkout automáticamente.
+
         $mobileScheme = config('mercadopago.mobile_scheme', 'bodyfix');
         $payload = [
+
             'items' => [[
                 'id'          => 'booking_' . $booking->id,
-                'title'       => $title,
+                'title' => "Booking #{$booking->id}",
                 'quantity'    => 1,
-                'unit_price'  => (float) $booking->price,
+                'unit_price'  => (float) $booking->transaction->amount,
                 'currency_id' => 'ARS',
             ]],
+            'notification_url' => route('payments.webhook.mercado-pago'),
             'external_reference' => (string) $booking->id,
             'back_urls' => [
-                'success' => "{$mobileScheme}://payment-callback?status=success&booking_id={$booking->id}",
-                'failure' => "{$mobileScheme}://payment-callback?status=failure&booking_id={$booking->id}",
-                'pending' => "{$mobileScheme}://payment-callback?status=pending&booking_id={$booking->id}",
+                'success' => "/?status=success",
+                'failure' => "/?status=failure",
+                'pending' => "/?status=pending",
+                //'success' => "{$mobileScheme}://payment-callback?status=success&booking_id={$booking->id}",
+                //'failure' => "{$mobileScheme}://payment-callback?status=failure&booking_id={$booking->id}",
+                //'pending' => "{$mobileScheme}://payment-callback?status=pending&booking_id={$booking->id}",
             ],
             'auto_return' => 'approved',
         ];
-
-        // notification_url solo cuando el servidor tiene una URL pública HTTPS
-        // (no aplica en desarrollo local con IP privada).
-        $appUrl = rtrim(config('app.url'), '/');
-        $isPublicUrl = str_starts_with($appUrl, 'https://') && ! filter_var(
-            parse_url($appUrl, PHP_URL_HOST),
-            FILTER_VALIDATE_IP
-        );
-
-        if ($isPublicUrl) {
-            $payload['notification_url'] = "{$appUrl}/api/v1/payments/webhook/mercado-pago";
-        }
 
         try {
             $client     = new PreferenceClient();
@@ -97,49 +83,24 @@ class MercadoPagoService
             $url = $preference->init_point ?? '';
         }
 
-        return $url;
+        return [
+            'init_point' => $url,
+            'preference_id' => $preference->id,
+        ];
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Consulta MP directamente para obtener el pago más reciente
-    // asociado a una reserva (por external_reference = booking_id).
-    // Se usa para hacer polling cuando no hay webhook disponible.
+    // Obtiene una merchant order de MP por su ID.
+    // La order agrupa los pagos asociados a una preference.
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function getLatestPaymentByExternalRef(int $bookingId): ?object
+    public function getMerchantOrderById(int $orderId): ?object
     {
         try {
-            $client  = new PaymentClient();
-            $results = $client->search([
-                'external_reference' => (string) $bookingId,
-                'sort'               => 'date_created',
-                'criteria'           => 'desc',
-                'limit'              => 1,
-            ]);
-
-            if (! empty($results->results)) {
-                return $results->results[0];
-            }
+            $client = new MerchantOrderClient();
+            return $client->get($orderId);
         } catch (\Throwable $e) {
-            Log::warning("MercadoPagoService: error buscando pago para booking #{$bookingId}", [
-                'error' => $e->getMessage(),
-            ]);
-        }
-
-        return null;
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Obtiene un pago de MP por su ID.
-    // ─────────────────────────────────────────────────────────────────────────
-
-    public function getPaymentById(int $mpPaymentId): ?object
-    {
-        try {
-            $client = new PaymentClient();
-            return $client->get($mpPaymentId);
-        } catch (\Throwable $e) {
-            Log::warning("MercadoPagoService: error obteniendo pago #{$mpPaymentId}", [
+            Log::warning("MercadoPagoService: error obteniendo merchant order #{$orderId}", [
                 'error' => $e->getMessage(),
             ]);
             return null;
@@ -152,83 +113,18 @@ class MercadoPagoService
     // Devuelve true si procesó, false si ya estaba procesado o no aplica.
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function processPayment(Booking $booking, object $mpPayment): bool
+    public function processPayment(Booking $booking, Payment $successPayment)
     {
-        $mpPaymentId = (string) $mpPayment->id;
+        DB::transaction(function () use ($booking, $successPayment) {
+            $booking->transaction->markPaymentAsPaid($successPayment->id);
+        });
 
-        // Idempotencia: si ya procesamos este pago, no lo procesar dos veces
-        if (Payment::where('external_id', $mpPaymentId)->exists()) {
-            return false;
-        }
-
-        $booking->loadMissing('transaction', 'user');
-
-        if (! $booking->transaction) {
-            Log::error("MercadoPagoService: booking #{$booking->id} no tiene transacción asociada.");
-            return false;
-        }
-
-        $status     = $mpPayment->status ?? 'pending';
-        $statusMap  = [
-            'approved'          => PaymentStatus::APPROVED,
-            'rejected'          => PaymentStatus::FAILED,
-            'cancelled'         => PaymentStatus::FAILED,
-            'in_process'        => PaymentStatus::PROCESSING,
-            'pending'           => PaymentStatus::PENDING,
-            'authorized'        => PaymentStatus::APPROVED,
-            'charge_back'       => PaymentStatus::REFUNDED,
-        ];
-
-        $paymentStatus = $statusMap[$status] ?? PaymentStatus::PENDING;
-
-        // Crear registro de Payment
-        $booking->transaction->payments()->create([
-            'user_id'        => $booking->user_id,
-            'amount'         => $mpPayment->transaction_amount ?? $booking->price,
-            'currency'       => 'ARS',
-            'payment_status' => $paymentStatus,
-            'payment_method' => 'mercado_pago',
-            'external_id'    => $mpPaymentId,
-            'preference_id'  => $mpPayment->order->id ?? null,
-            'payment_data'   => (array) $mpPayment,
-            'paid_at'        => in_array($paymentStatus, [PaymentStatus::APPROVED])
-                ? now()
-                : null,
-        ]);
-
-        if (in_array($status, ['approved', 'authorized'])) {
-            // Pago aprobado: el turno queda confirmado directamente (sin step manual)
-            $booking->state->transitionTo(BookingConfirmed::class);
-            $booking->transaction->update(['status' => TransactionStatus::COMPLETED]);
-
-            if ($booking->user) {
-                $hora  = substr($booking->start_time ?? '', 0, 5);
-                $fecha = $booking->date;
-                $booking->user->notify(new UserNotification(
-                    title: '¡Turno confirmado! ✓',
-                    body:  "Tu pago fue aprobado y tu turno del {$fecha} a las {$hora} quedó confirmado.",
-                ));
-            }
-
-            return true;
-        }
-
-        if (in_array($status, ['rejected', 'cancelled'])) {
-            // Rechazar: booking pasa a cancelled
-            $booking->state->transitionTo(BookingCancelled::class);
-            $booking->transaction->update(['status' => TransactionStatus::FAILED]);
-
-            if ($booking->user) {
-                $booking->user->notify(new UserNotification(
-                    title: 'Pago rechazado',
-                    body:  'Tu pago no pudo procesarse. La reserva fue cancelada. Podés intentarlo de nuevo.',
-                ));
-            }
-
-            return true;
-        }
-
-        return false;
+        $booking->user->notify(
+            new UserNotification(
+                title: "Pago Aprobado",
+                body: "Tu pago ha sido aprobado. El masajista será notificado y confirmará tu turno pronto."
+            )
+        );
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -240,7 +136,7 @@ class MercadoPagoService
     {
         try {
             $client = new PaymentRefundClient();
-            $client->create((int) $mpPaymentId);
+            //$client->create((int) $mpPaymentId);
 
             return true;
         } catch (\Throwable $e) {
