@@ -2,6 +2,7 @@
 
 namespace App\Models\Payments;
 
+use App\Enums\PaymentStatus;
 use App\Enums\TransactionStatus;
 use App\Models\Therapists\Booking;
 use App\Models\User;
@@ -38,6 +39,22 @@ class Transaction extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function markPaymentAsPaid($paimentId): void
+    {
+        $payment = $this->payments()->find($paimentId);
+        if (! $payment) {
+            throw new \Exception("Payment with ID {$paimentId} not found for this transaction.");
+        }
+
+        $payment->payment_status = PaymentStatus::APPROVED;
+        $payment->save();
+
+        // Si el pago se completó, actualizamos el estado de la transacción
+
+        $this->status = TransactionStatus::COMPLETED;
+        $this->save();
+    }
+
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
@@ -46,7 +63,7 @@ class Transaction extends Model
     public function hasApprovedPayment(): bool
     {
         return $this->payments()
-            ->where('payment_status', TransactionStatus::COMPLETED)
+            ->where('payment_status', PaymentStatus::APPROVED)
             ->exists();
     }
 

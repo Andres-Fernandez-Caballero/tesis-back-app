@@ -2,34 +2,26 @@
 
 namespace App\Core\UseCases\Payments;
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Enums\TransactionStatus;
-use App\Models\Payments\Transaction;
-use Illuminate\Support\Facades\Log;
+use App\Models\Therapists\Booking;
 
-class FakePayment implements Paymentable
+class FakePayment extends AbstractPayment
 {
-    public function processPayment(
-        Transaction $transaction,
-    ): PaymentResult {
+    public function processPayment(Booking $booking): PaymentResult
+    {
+        $transaction = $booking->transaction;
 
-        $transaction->payments()
-            ->where('payment_status', 'pending')
-            ->update(['payment_status' => 'cancelled']);
+        $this->recordPayment(
+            $transaction,
+            PaymentMethod::FAKE,
+            PaymentStatus::APPROVED,
+            externalId: 'fake_' . uniqid(),
+        );
 
-        Log::info("transaccion", $transaction->toArray());
-
-        $payment = $transaction->payments()->create([
-            'user_id' => $transaction->client_id,
-            'amount' => $transaction->amount,
-            'currency' => $transaction->currency,
-            'payment_status' => PaymentStatus::APPROVED,
-            'payment_method' => 'fake',
-            'external_id' => 'fake_' . uniqid(),
-        ]);
-        Log::info("payment", $payment->toArray());
         $transaction->update(['status' => TransactionStatus::COMPLETED]);
-        // Simula un procesamiento de pago exitoso
+
         return new PaymentResult(
             PaymentStatus::APPROVED,
             transactionId: $transaction->id,

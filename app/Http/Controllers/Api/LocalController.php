@@ -128,16 +128,8 @@ class LocalController extends Controller
                 'description'  => 'Seña — ' . ($especialidad->nombre ?? 'BodyFix'),
             ]);
 
-            // Crear preference de Mercado Pago
-            $mpService = app(MercadoPagoService::class);
-            $initPoint = $mpService->createPreference($booking);
-
             return response()->json([
                 'data'    => BookingResource::make($booking),
-                'payment' => [
-                    'requires_payment' => true,
-                    'init_point'       => $initPoint,
-                ],
             ], 201);
         });
     }
