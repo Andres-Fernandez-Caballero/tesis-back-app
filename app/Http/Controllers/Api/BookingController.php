@@ -55,56 +55,12 @@ class BookingController extends Controller
      */
     public function paymentStatus(Request $request, Booking $booking): JsonResponse
     {
-        // Solo el cliente dueño de la reserva puede consultarla
-        if ($booking->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'No autorizado.'], 403);
-        }
-
         $stateName = $booking->getRawOriginal('state');
 
-        // Si ya salió de pending_payment, devolver el estado actual directamente
-        if ($stateName !== BookingPendingPayment::$name) {
-            $isApproved = in_array($stateName, ['pending', 'confirmed', 'completed']);
-            return response()->json([
-                'state'          => $stateName,
-                'payment_status' => $isApproved ? 'approved' : 'rejected',
-            ]);
-        }
-
-        // Consultar MP para ver si hay un pago asociado a esta reserva
-        $mpService = app(MercadoPagoService::class);
-        $mpPayment = $mpService->getLatestPaymentByExternalRef($booking->id);
-
-        if (! $mpPayment) {
-            return response()->json([
-                'state'          => 'pending_payment',
-                'payment_status' => 'pending',
-            ]);
-        }
-
-        $mpStatus = $mpPayment->status ?? 'pending';
-
-        // Si el pago tiene un resultado definitivo, procesarlo
-        if (in_array($mpStatus, ['approved', 'authorized', 'rejected', 'cancelled'])) {
-            DB::transaction(function () use ($mpService, $booking, $mpPayment) {
-                $booking->refresh(); // evitar race conditions
-                if ($booking->getRawOriginal('state') === BookingPendingPayment::$name) {
-                    $mpService->processPayment($booking, $mpPayment);
-                }
-            });
-
-            $booking->refresh();
-            $stateName = $booking->getRawOriginal('state');
-
-            return response()->json([
-                'state'          => $stateName,
-                'payment_status' => in_array($mpStatus, ['approved', 'authorized']) ? 'approved' : 'rejected',
-            ]);
-        }
 
         return response()->json([
-            'state'          => 'pending_payment',
-            'payment_status' => 'pending',
+            'state'          => $stateName,
+            'payment_status' => $booking->transaction?->hasApprovedPayment() ? 'approved' : 'pending',
         ]);
     }
 

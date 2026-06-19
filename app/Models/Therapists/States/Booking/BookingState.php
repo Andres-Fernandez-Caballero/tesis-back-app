@@ -8,7 +8,7 @@ use Spatie\ModelStates\StateConfig;
 abstract class BookingState extends State
 {
     abstract public function label(): string;
-    abstract public function description(): string;    
+    abstract public function description(): string;
 
     public static function config(): StateConfig
     {
