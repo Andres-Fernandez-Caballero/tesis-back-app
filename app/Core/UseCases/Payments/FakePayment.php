@@ -9,7 +9,7 @@ use App\Models\Therapists\Booking;
 
 class FakePayment extends AbstractPayment
 {
-    public function processPayment(Booking $booking): PaymentResult
+    public function processPayment(Booking $booking, string $platform = 'web'): PaymentResult
     {
         $transaction = $booking->transaction;
 

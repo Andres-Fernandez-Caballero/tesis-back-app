@@ -24,37 +24,46 @@ class MercadoPagoService
     // return ['init_point', 'preference_id']
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function createPreference(Booking $booking): array
+    public function createPreference(Booking $booking, string $platform = 'web'): array
     {
         MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
-        // back_urls apuntan al deep link de la app mobile.
-        // bodyfix:// es el scheme registrado en app.json — MP lo acepta como back_url
-        // para apps mobile y funciona tanto en Expo Go (que registra el scheme) como
-        // en builds standalone. El browser in-app (openAuthSessionAsync) detecta
-        // el redirect a este scheme y cierra el checkout automáticamente.
 
         $mobileScheme = config('mercadopago.mobile_scheme', 'bodyfix');
-        $payload = [
+        $bookingId    = $booking->id;
 
+        // Native: openAuthSessionAsync detecta el redirect al scheme y cierra el browser.
+        // Web: redirige a la URL del frontend configurada en FRONTEND_URL.
+        if ($platform === 'native') {
+            $backUrls = [
+                'success' => "{$mobileScheme}://payment-callback?status=success&booking_id={$bookingId}",
+                'failure' => "{$mobileScheme}://payment-callback?status=failure&booking_id={$bookingId}",
+                'pending' => "{$mobileScheme}://payment-callback?status=pending&booking_id={$bookingId}",
+            ];
+        } else {
+            // back_url apunta al backend (siempre público) que luego redirige al frontend.
+            // Esto evita que MP rechace URLs de localhost en desarrollo.
+            $backUrls = [
+                'success' => route('payments.mp-return', ['status' => 'success', 'booking_id' => $bookingId]),
+                'failure' => route('payments.mp-return', ['status' => 'failure', 'booking_id' => $bookingId]),
+                'pending' => route('payments.mp-return', ['status' => 'pending', 'booking_id' => $bookingId]),
+            ];
+        }
+
+        $payload = [
             'items' => [[
-                'id'          => 'booking_' . $booking->id,
-                'title' => "Booking #{$booking->id}",
+                'id'          => 'booking_' . $bookingId,
+                'title'       => "Booking #{$bookingId}",
                 'quantity'    => 1,
                 'unit_price'  => (float) $booking->transaction->amount,
                 'currency_id' => 'ARS',
             ]],
-            'notification_url' => route('payments.webhook.mercado-pago'),
-            'external_reference' => (string) $booking->id,
-            'back_urls' => [
-                'success' => "/?status=success",
-                'failure' => "/?status=failure",
-                'pending' => "/?status=pending",
-                //'success' => "{$mobileScheme}://payment-callback?status=success&booking_id={$booking->id}",
-                //'failure' => "{$mobileScheme}://payment-callback?status=failure&booking_id={$booking->id}",
-                //'pending' => "{$mobileScheme}://payment-callback?status=pending&booking_id={$booking->id}",
-            ],
-            'auto_return' => 'approved',
+            'notification_url'   => route('payments.webhook.mercado-pago'),
+            'external_reference' => (string) $bookingId,
+            'back_urls'          => $backUrls,
+            'auto_return'        => 'approved',
         ];
+
+        Log::debug('MercadoPagoService: payload para crear preference', ['payload' => $payload]);
 
         try {
             $client     = new PreferenceClient();
@@ -69,7 +78,13 @@ class MercadoPagoService
             ]);
             throw $e;
         }
-
+        Log::debug('MercadoPagoService: preference CREADA', [
+            'preference_id' => $preference->id,
+            'notification_url' => $preference->notification_url,
+            'external_reference' => $preference->external_reference,
+            'init_point'    => $preference->init_point,
+            'sandbox_init_point' => $preference->sandbox_init_point,
+        ]);
         // En sandbox usar sandbox_init_point; en producción usar init_point
         $isSandbox = config('mercadopago.sandbox');
         $url = $isSandbox ? $preference->sandbox_init_point : $preference->init_point;

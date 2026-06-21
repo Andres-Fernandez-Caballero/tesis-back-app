@@ -11,12 +11,12 @@ use MercadoPago\Exceptions\MPApiException;
 
 class MercadoPagoPayment extends AbstractPayment
 {
-    public function processPayment(Booking $booking): PaymentResult
+    public function processPayment(Booking $booking, string $platform = 'web'): PaymentResult
     {
         $transaction = $booking->transaction;
 
         try {
-            ['init_point' => $initPoint, 'preference_id' => $preferenceId] = app(MercadoPagoService::class)->createPreference($booking);
+            ['init_point' => $initPoint, 'preference_id' => $preferenceId] = app(MercadoPagoService::class)->createPreference($booking, $platform);
 
             $payment = $this->recordPayment(
                 $transaction,

@@ -22,6 +22,9 @@ Route::prefix('payments')
         // El estado real se consulta con el endpoint de polling.
         // ─────────────────────────────────────────────────────────────────────
 
+        // MP redirige aquí tras el checkout web. El backend reenvía al frontend
+        // con los mismos query params — así back_url siempre apunta a una URL
+        // pública (el backend) y funciona en cualquier entorno (incluso localhost).
         Route::get('/mp-return', function (Request $request) {
             $status    = $request->query('status', 'pending');
             $bookingId = $request->query('booking_id');
@@ -31,11 +34,8 @@ Route::prefix('payments')
                 'booking_id' => $bookingId,
             ]);
 
-            return response()->json([
-                'message'    => 'Pago recibido. Verificando con el servidor...',
-                'status'     => $status,
-                'booking_id' => $bookingId,
-            ]);
+            $frontendUrl = config('app.frontend_url', config('app.url'));
+            return redirect("{$frontendUrl}/payment-callback?status={$status}&booking_id={$bookingId}");
         })->name('payments.mp-return');
 
         // ─────────────────────────────────────────────────────────────────────

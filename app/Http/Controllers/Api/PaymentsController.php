@@ -21,7 +21,7 @@ class PaymentsController extends Controller
     // ─────────────────────────────────────────────────────────────────────────
     public function createPaymentIntent(PaymentsCreatePaymentRequest $request): JsonResponse
     {
-        
+
         DB::beginTransaction();
         try {
             $booking = Booking::findOrFail($request->booking_id);
@@ -34,7 +34,7 @@ class PaymentsController extends Controller
             }
 
             $paymentResult = PaymentMethodFactory::create($request->payment_method)
-                ->processPayment(booking: $booking);
+                ->processPayment(booking: $booking, platform: $request->input('platform', 'web'));
 
             DB::commit();
 
@@ -70,10 +70,10 @@ class PaymentsController extends Controller
 
         try {
             return match (true) {
-                // Merchant Order cerrada: el pago fue completado
-                $type === 'topic_merchant_order_wh' && ($payload['action'] ?? null) === 'update'
-                => $this->handleMerchantOrder((int) $payload['data_id'], $mpService),
-                
+                // IPN: MP envía topic=merchant_order&id=<order_id> como query params
+                $type === 'merchant_order'
+                => $this->handleMerchantOrder((int) ($payload['id'] ?? 0), $mpService),
+
                 default => response()->json(['status' => 'ignored'], 200),
             };
         } catch (\Throwable $e) {

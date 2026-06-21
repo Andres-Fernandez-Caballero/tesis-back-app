@@ -24,8 +24,9 @@ class CreatePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_method' => 'required|string', // Método de pago, debe ser una cadena (ej. tarjeta de crédito, transferencia bancaria)
-            'booking_id' => 'required|exists:bookings,id', // ID de la reserva, debe existir en la tabla de reservas
+            'payment_method' => 'required|string',
+            'booking_id'     => 'required|exists:bookings,id',
+            'platform'       => 'sometimes|string|in:web,native',
         ];
     }
 
@@ -33,9 +34,10 @@ class CreatePaymentRequest extends FormRequest
     {
         return [
             'payment_method.required' => 'El método de pago es obligatorio.',
-            'payment_method.string' => 'El método de pago debe ser una cadena de texto.',
-            'booking_id.required' => 'El ID de la reserva es obligatorio.',
-            'booking_id.exists' => 'El ID de la reserva debe existir en la base de datos.',
+            'payment_method.string'   => 'El método de pago debe ser una cadena de texto.',
+            'booking_id.required'     => 'El ID de la reserva es obligatorio.',
+            'booking_id.exists'       => 'El ID de la reserva debe existir en la base de datos.',
+            'platform.in'             => 'La plataforma debe ser "web" o "native".',
         ];
     }
 }
