@@ -35,7 +35,6 @@ class PaymentsController extends Controller
 
             $paymentResult = PaymentMethodFactory::create($request->payment_method)
                 ->processPayment(booking: $booking, platform: $request->input('platform', 'web'));
-
             DB::commit();
 
             return response()->json([

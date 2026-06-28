@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Enums\TransactionStatus;
 use App\Models\Therapists\Booking;
+use App\Models\Therapists\States\Booking\BookingConfirmed;
 
 class FakePayment extends AbstractPayment
 {
@@ -21,7 +22,7 @@ class FakePayment extends AbstractPayment
         );
 
         $transaction->update(['status' => TransactionStatus::COMPLETED]);
-
+        $booking->state->transitionTo(BookingConfirmed::class);
         return new PaymentResult(
             PaymentStatus::APPROVED,
             transactionId: $transaction->id,

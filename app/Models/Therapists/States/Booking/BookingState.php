@@ -22,6 +22,7 @@ abstract class BookingState extends State
             // ── Compatibilidad retroactiva (datos históricos) ─────────────────
             // pending_payment → pending: flujo antiguo, no se usa en bookings nuevos
             ->allowTransition(BookingPendingPayment::class, BookingPending::class)
+            ->allowTransition(BookingPending::class,   BookingPendingPayment::class)
             ->allowTransition(BookingPending::class,   BookingConfirmed::class)
             ->allowTransition(BookingPending::class,   BookingCancelled::class)
             ->allowTransition(BookingPending::class,   BookingExpired::class)

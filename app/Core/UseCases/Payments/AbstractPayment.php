@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Models\Payments\Payment;
 use App\Models\Payments\Transaction;
+use App\Models\Therapists\States\Booking\BookingPendingPayment;
 
 abstract class AbstractPayment implements Paymentable
 {
@@ -16,6 +17,10 @@ abstract class AbstractPayment implements Paymentable
         ?string $externalId = null,
         ?string $preferenceId = null,
     ): Payment {
+        $booking = $transaction->booking;
+        if (! ($booking->state instanceof BookingPendingPayment)) {
+            $booking->state->transitionTo(BookingPendingPayment::class);
+        }
         $transaction->payments()
             ->where('payment_status', PaymentStatus::PENDING)
             ->update(['payment_status' => PaymentStatus::FAILED]);

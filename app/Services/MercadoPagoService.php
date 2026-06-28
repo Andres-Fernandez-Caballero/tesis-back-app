@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Payments\Payment;
 use App\Models\Therapists\Booking;
+use App\Models\Therapists\States\Booking\BookingConfirmed;
 use App\Notifications\UserNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -132,6 +133,7 @@ class MercadoPagoService
     {
         DB::transaction(function () use ($booking, $successPayment) {
             $booking->transaction->markPaymentAsPaid($successPayment->id);
+            $booking->state->transitionTo(BookingConfirmed::class);
         });
 
         $booking->user->notify(
