@@ -42,6 +42,13 @@ COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.con
 # Copiar el código fuente
 COPY . .
 
+# Crear directorios de storage que Laravel necesita en tiempo de build
+RUN mkdir -p storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache
+
 # Instalar dependencias de PHP (sin dev) y optimizar autoloader
 # Las credenciales de Flux se pasan como build secrets en CI
 RUN --mount=type=secret,id=flux_username \
