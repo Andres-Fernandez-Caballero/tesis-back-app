@@ -11,12 +11,10 @@ ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Instalar dependencias del sistema, Node.js 22 y extensiones PHP necesarias para Laravel
+# Instalar dependencias del sistema y extensiones PHP necesarias para Laravel
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev \
     libzip-dev libicu-dev libpq-dev \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs \
     && docker-php-ext-install \
         pdo_mysql \
         mbstring \
@@ -43,11 +41,6 @@ COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.con
 
 # Copiar el código fuente
 COPY . .
-
-# Compilar assets de frontend (Vite)
-RUN npm install --no-audit --no-progress \
-    && npm run build \
-    && rm -rf node_modules
 
 # Instalar dependencias de PHP (sin dev) y optimizar autoloader
 # Las credenciales de Flux se pasan como build secrets en CI
