@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM php:8.3-apache
 
 ARG WWWGROUP=1000
@@ -10,10 +11,12 @@ ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Instalar dependencias del sistema y extensiones PHP necesarias para Laravel
+# Instalar dependencias del sistema, Node.js 22 y extensiones PHP necesarias para Laravel
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev \
     libzip-dev libicu-dev libpq-dev \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
     && docker-php-ext-install \
         pdo_mysql \
         mbstring \
@@ -41,8 +44,21 @@ COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.con
 # Copiar el código fuente
 COPY . .
 
+# Compilar assets de frontend (Vite)
+RUN npm ci --no-audit --no-progress \
+    && npm run build \
+    && rm -rf node_modules
+
 # Instalar dependencias de PHP (sin dev) y optimizar autoloader
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Las credenciales de Flux se pasan como build secrets en CI
+RUN --mount=type=secret,id=flux_username \
+    --mount=type=secret,id=flux_license_key \
+    if [ -s /run/secrets/flux_username ]; then \
+        composer config http-basic.composer.fluxui.dev \
+            "$(cat /run/secrets/flux_username)" \
+            "$(cat /run/secrets/flux_license_key)"; \
+    fi \
+    && composer install --no-dev --optimize-autoloader --no-interaction
 
 # Crear usuario con el mismo UID/GID que el host para evitar problemas de permisos
 RUN groupmod -g ${WWWGROUP} www-data || true \

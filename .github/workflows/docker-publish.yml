@@ -31,5 +31,8 @@ jobs:
           tags: |
             andresfernandezcaballero/bodyfix:latest
             andresfernandezcaballero/bodyfix:${{ github.sha }}
+          secrets: |
+            flux_username=${{ secrets.FLUX_USERNAME }}
+            flux_license_key=${{ secrets.FLUX_LICENSE_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
