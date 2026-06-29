@@ -45,7 +45,7 @@ COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.con
 COPY . .
 
 # Compilar assets de frontend (Vite)
-RUN npm ci --no-audit --no-progress \
+RUN npm install --no-audit --no-progress \
     && npm run build \
     && rm -rf node_modules
 

@@ -1,0 +1,15 @@
+node_modules
+public/build
+.git
+.github
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+vendor
+.env
+.env.*
+!.env.example
+*.md
+docker-compose.yml
+docker-compose.prod.yml
