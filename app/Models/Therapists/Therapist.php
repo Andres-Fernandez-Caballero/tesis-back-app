@@ -45,12 +45,12 @@ class Therapist extends Model
 
     public function availabilities(): HasMany
     {
-        return $this->hasMany(Availability::class);
+        return $this->hasMany(Availability::class, 'therapist_id');
     }
 
     public function availabilyExceptions(): HasMany
     {
-        return $this->hasMany(AvailabilityException::class);
+        return $this->hasMany(AvailabilityException::class, 'therapist_id');
     }
 
     public function user(): BelongsTo

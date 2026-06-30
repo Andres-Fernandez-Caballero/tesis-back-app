@@ -15,11 +15,10 @@ class CreateClientUser {
     */
     public function execute(array $data) {
         $user = User::create([
-            'name' => $data['name'],
+            'name'      => $data['name'],
             'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-            'password' => $data['password']
+            'email'     => $data['email'],
+            'password'  => $data['password'],
         ]);
 
         UserData::create([

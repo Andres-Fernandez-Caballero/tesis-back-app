@@ -287,12 +287,137 @@ class LocalRegistrationResource extends Resource
                             ->warning()
                             ->send();
                     }),
-
-                Tables\Actions\DeleteAction::make()
-                    ->label('Eliminar'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('aprobar_lote')
+                        ->label('Aprobar seleccionados')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Aprobar solicitudes en cadena')
+                        ->modalDescription('Se aprobarán todas las solicitudes pendientes seleccionadas, se crearán los locales y se notificará a cada responsable por email. Las solicitudes que no estén en estado pendiente serán ignoradas.')
+                        ->modalSubmitActionLabel('Sí, aprobar todas')
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
+                            $aprobados = 0;
+                            $omitidos  = 0;
+                            $mailFails = 0;
+
+                            foreach ($records as $record) {
+                                if ($record->status !== LocalRegistrationStatus::PENDING) {
+                                    $omitidos++;
+                                    continue;
+                                }
+
+                                $password = Str::password(12, symbols: false);
+
+                                $owner = User::where('email', $record->email)->first();
+
+                                if ($owner) {
+                                    $owner->forceFill([
+                                        'password'             => Hash::make($password),
+                                        'must_change_password' => true,
+                                    ])->save();
+                                } else {
+                                    $owner = User::create([
+                                        'name'                 => $record->nombre ?? $record->nombre_local,
+                                        'last_name'            => $record->apellido,
+                                        'email'                => $record->email,
+                                        'password'             => Hash::make($password),
+                                        'must_change_password' => true,
+                                    ]);
+                                }
+
+                                UserData::firstOrCreate(['user_id' => $owner->id]);
+
+                                SpatieRole::firstOrCreate(['name' => Role::SPA_OWNER->value, 'guard_name' => 'web']);
+                                $owner->assignRole(Role::SPA_OWNER->value);
+
+                                $local = Local::create([
+                                    'nombre_local'          => $record->nombre_local,
+                                    'direccion'             => $record->direccion,
+                                    'cuit'                  => $record->cuit,
+                                    'telefono'              => $record->telefono,
+                                    'email'                 => $record->email,
+                                    'descripcion'           => $record->descripcion,
+                                    'localidad'             => $record->localidad,
+                                    'latitude'              => $record->latitude,
+                                    'longitude'             => $record->longitude,
+                                    'instagram'             => $record->instagram,
+                                    'status'                => 'active',
+                                    'local_registration_id' => $record->id,
+                                    'user_id'               => $owner->id,
+                                ]);
+
+                                if (! $local->latitude || ! $local->longitude) {
+                                    self::geocodeLocal($local, $record->direccion, $record->localidad);
+                                }
+
+                                $local->seedDefaultEspecialidades();
+
+                                $record->update(['status' => LocalRegistrationStatus::APPROVED]);
+
+                                try {
+                                    Mail::to($record->email)->send(new LocalRegistrationApproved($record, $password));
+                                } catch (\Exception) {
+                                    $mailFails++;
+                                }
+
+                                $aprobados++;
+                            }
+
+                            $msg = "Se aprobaron {$aprobados} solicitud(es).";
+                            if ($omitidos)  $msg .= " {$omitidos} ignorada(s) por no estar pendientes.";
+                            if ($mailFails) $msg .= " {$mailFails} email(s) no pudieron enviarse.";
+
+                            Notification::make()
+                                ->title($msg)
+                                ->success()
+                                ->send();
+                        }),
+
+                    Tables\Actions\BulkAction::make('rechazar_lote')
+                        ->label('Rechazar seleccionados')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Rechazar solicitudes en cadena')
+                        ->modalDescription('Se rechazarán todas las solicitudes pendientes seleccionadas y se notificará a cada responsable por email. Las solicitudes que no estén en estado pendiente serán ignoradas.')
+                        ->modalSubmitActionLabel('Sí, rechazar todas')
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
+                            $rechazados = 0;
+                            $omitidos   = 0;
+                            $mailFails  = 0;
+
+                            foreach ($records as $record) {
+                                if ($record->status !== LocalRegistrationStatus::PENDING) {
+                                    $omitidos++;
+                                    continue;
+                                }
+
+                                $record->update(['status' => LocalRegistrationStatus::REJECTED]);
+
+                                try {
+                                    Mail::to($record->email)->send(new LocalRegistrationRejected($record));
+                                } catch (\Exception) {
+                                    $mailFails++;
+                                }
+
+                                $rechazados++;
+                            }
+
+                            $msg = "Se rechazaron {$rechazados} solicitud(es).";
+                            if ($omitidos)  $msg .= " {$omitidos} ignorada(s) por no estar pendientes.";
+                            if ($mailFails) $msg .= " {$mailFails} email(s) no pudieron enviarse.";
+
+                            Notification::make()
+                                ->title($msg)
+                                ->warning()
+                                ->send();
+                        }),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])

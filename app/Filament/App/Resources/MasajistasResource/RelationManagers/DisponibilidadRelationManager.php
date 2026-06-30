@@ -22,8 +22,8 @@ class DisponibilidadRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('day_of_week')
-                    ->label('Día de la semana')
+                Forms\Components\CheckboxList::make('day_of_week')
+                    ->label('Días de la semana')
                     ->options([
                         1 => 'Lunes',
                         2 => 'Martes',
@@ -34,6 +34,8 @@ class DisponibilidadRelationManager extends RelationManager
                         7 => 'Domingo',
                     ])
                     ->required()
+                    ->columns(4)
+                    ->gridDirection('row')
                     ->columnSpanFull(),
 
                 Forms\Components\Grid::make(2)
@@ -61,18 +63,18 @@ class DisponibilidadRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('day_of_week')
-                    ->label('Día')
-                    ->formatStateUsing(fn (int $state): string => match ($state) {
-                        1 => 'Lunes',
-                        2 => 'Martes',
-                        3 => 'Miércoles',
-                        4 => 'Jueves',
-                        5 => 'Viernes',
-                        6 => 'Sábado',
-                        7 => 'Domingo',
-                        default => '—',
+                    ->label('Días')
+                    ->state(function ($record): string {
+                        $nombres = [1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves', 5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'];
+                        $days = is_array($record->day_of_week)
+                            ? $record->day_of_week
+                            : json_decode($record->getRawOriginal('day_of_week') ?? '[]', true);
+                        return collect($days)
+                            ->map(fn ($d) => $nombres[(int) $d] ?? null)
+                            ->filter()
+                            ->implode(', ') ?: '—';
                     })
-                    ->sortable(),
+                    ->wrap(),
 
                 Tables\Columns\TextColumn::make('start_time')
                     ->label('Desde')
