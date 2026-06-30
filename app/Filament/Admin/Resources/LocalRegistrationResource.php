@@ -199,15 +199,22 @@ class LocalRegistrationResource extends Resource
                         $password = Str::password(12, symbols: false);
 
                         // 2. Crear usuario dueño del local (o reutilizar si ya existe)
-                        $owner = User::firstOrCreate(
-                            ['email' => $record->email],
-                            [
-                                'name'                 => $record->nombre ?? $record->nombre_local,
-                                'last_name'            => $record->apellido,
+                        $owner = User::where('email', $record->email)->first();
+
+                        if ($owner) {
+                            $owner->forceFill([
                                 'password'             => Hash::make($password),
                                 'must_change_password' => true,
-                            ]
-                        );
+                            ])->save();
+                        } else {
+                            $owner = User::create([
+                                'name'                 => $record->nombre ?? $record->nombre_local,
+                                'last_name'            => $record->apellido,
+                                'email'                => $record->email,
+                                'password'             => Hash::make($password),
+                                'must_change_password' => true,
+                            ]);
+                        }
 
                         // Crear UserData si no existe
                         UserData::firstOrCreate(['user_id' => $owner->id]);
