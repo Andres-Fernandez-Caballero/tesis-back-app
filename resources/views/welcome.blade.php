@@ -518,6 +518,14 @@
         function closeModal() {
             modal.classList.remove('active');
             document.body.style.overflow = '';
+            resetModal();
+        }
+
+        function resetModal() {
+            document.getElementById('form-registrar').reset();
+            document.getElementById('form-registrar').classList.remove('hidden');
+            document.getElementById('registro-success').classList.add('hidden');
+            clearErrors();
         }
 
         // === Form submit ===
