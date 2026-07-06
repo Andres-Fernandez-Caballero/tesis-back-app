@@ -6,6 +6,7 @@
 	],
 	"service": "laravel.test",
 	"workspaceFolder": "/var/www/html",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/var/www/html,type=bind,consistency=cached",
 	"customizations": {
 		"vscode": {
 			"extensions": [
