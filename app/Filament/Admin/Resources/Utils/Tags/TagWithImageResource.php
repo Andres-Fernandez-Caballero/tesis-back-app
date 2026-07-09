@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Utils\Tags;
+namespace App\Filament\Admin\Resources\Utils\Tags;
 
-use App\Filament\Resources\Utils\Tags\TagWithImageResource\Pages;
-use App\Filament\Resources\Utils\Tags\TagWithImageResource\RelationManagers;
+use App\Filament\Admin\Resources\Utils\Tags\TagWithImageResource\Pages;
+use App\Filament\Admin\Resources\Utils\Tags\TagWithImageResource\RelationManagers;
 use App\Models\Utils\Tags\TagWithImage;
 use Filament\Forms;
 use Filament\Forms\Form;

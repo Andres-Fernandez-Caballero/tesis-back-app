@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Utils\Tags\TagWithImageResource\Pages;
+namespace App\Filament\Admin\Resources\Utils\Tags\TagWithImageResource\Pages;
 
-use App\Filament\Resources\Utils\Tags\TagWithImageResource;
+use App\Filament\Admin\Resources\Utils\Tags\TagWithImageResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
