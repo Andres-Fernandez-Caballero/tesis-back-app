@@ -1,0 +1,77 @@
+# syntax=docker/dockerfile:1
+
+# Instalar dependencias de PHP solo para tener vendor/ disponible al compilar
+# los assets (resources/css/app.css importa vendor/livewire/flux/dist/flux.css)
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --ignore-platform-reqs
+
+# Compilar assets de Vite (CSS/JS)
+FROM node:20-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+COPY --from=vendor /app/vendor ./vendor
+RUN npm run build
+
+# Sin Apache: se sirve con el servidor embebido de PHP (igual que Sail local,
+# ver docker/8.3/supervisord.conf), evitando los problemas de MPM de Apache.
+FROM php:8.3-cli
+
+WORKDIR /var/www/html
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Instalar dependencias del sistema y extensiones PHP necesarias para Laravel
+RUN apt-get update && apt-get install -y \
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev \
+    libzip-dev libicu-dev libpq-dev \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip \
+        intl \
+        xml \
+        opcache \
+    && apt-get -y autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Instalar Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copiar el código fuente
+COPY . .
+
+# Copiar los assets ya compilados (evita instalar Node en la imagen final)
+COPY --from=assets /app/public/build ./public/build
+
+# Crear directorios de storage que Laravel necesita en tiempo de build
+RUN mkdir -p storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache
+
+# Instalar dependencias de PHP (sin dev) y optimizar autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Permisos correctos para Laravel
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+RUN chmod +x docker/railway/entrypoint-serve.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["/var/www/html/docker/railway/entrypoint-serve.sh"]
