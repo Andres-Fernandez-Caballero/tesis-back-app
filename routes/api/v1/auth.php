@@ -9,7 +9,7 @@ Route::prefix('auth')
     Route::post('register/client', [AuthenticationController::class, 'registerClient'])->name('auth.register.client');
     
     // @deprecated, use register/client instead
-    Route::post('register/therapist', [AuthenticationController::class, 'registerTherapist'])->name('auth.register.client');
+    Route::post('register/therapist', [AuthenticationController::class, 'registerTherapist'])->name('auth.register.therapist');
     
     Route::post('/login', [AuthenticationController::class, 'login'])->name('auth.login');
     Route::post('forgot-password', [AuthenticationController::class, 'forgotPassword'])->name('auth.forgot-password');
