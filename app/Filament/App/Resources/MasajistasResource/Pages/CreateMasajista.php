@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -23,6 +24,7 @@ class CreateMasajista extends CreateRecord
     private string $generatedPassword = '';
     private string $generatedDni      = '';
     private string $generatedTelefono = '';
+
 
     /**
      * Validar unicidad de campos virtuales (email y DNI) antes de crear el therapist.

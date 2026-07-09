@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\AnnouncementRepository;
 
+// @deprecated
 class AnnouncementService
 {
     public function __construct(protected AnnouncementRepository $announcementRepository){}
