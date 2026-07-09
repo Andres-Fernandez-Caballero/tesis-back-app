@@ -1,11 +1,19 @@
 # syntax=docker/dockerfile:1
 
+# Instalar dependencias de PHP solo para tener vendor/ disponible al compilar
+# los assets (resources/css/app.css importa vendor/livewire/flux/dist/flux.css)
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --ignore-platform-reqs
+
 # Compilar assets de Vite (CSS/JS)
 FROM node:20-alpine AS assets
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+COPY --from=vendor /app/vendor ./vendor
 RUN npm run build
 
 FROM php:8.3-apache
@@ -62,15 +70,7 @@ RUN mkdir -p storage/framework/cache/data \
     bootstrap/cache
 
 # Instalar dependencias de PHP (sin dev) y optimizar autoloader
-# Las credenciales de Flux se pasan como build secrets en CI
-RUN --mount=type=secret,id=flux_username \
-    --mount=type=secret,id=flux_license_key \
-    if [ -s /run/secrets/flux_username ]; then \
-        composer config http-basic.composer.fluxui.dev \
-            "$(cat /run/secrets/flux_username)" \
-            "$(cat /run/secrets/flux_license_key)"; \
-    fi \
-    && composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Crear usuario con el mismo UID/GID que el host para evitar problemas de permisos
 RUN groupmod -g ${WWWGROUP} www-data || true \
