@@ -1,4 +1,13 @@
 # syntax=docker/dockerfile:1
+
+# Compilar assets de Vite (CSS/JS)
+FROM node:20-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
 FROM php:8.3-apache
 
 ARG WWWGROUP=1000
@@ -42,6 +51,9 @@ COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.con
 # Copiar el código fuente
 COPY . .
 
+# Copiar los assets ya compilados (evita instalar Node en la imagen final)
+COPY --from=assets /app/public/build ./public/build
+
 # Crear directorios de storage que Laravel necesita en tiempo de build
 RUN mkdir -p storage/framework/cache/data \
     storage/framework/sessions \
@@ -69,4 +81,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
+RUN chmod +x docker/railway/entrypoint.sh
+
 EXPOSE 80
+
+ENTRYPOINT ["/var/www/html/docker/railway/entrypoint.sh"]
