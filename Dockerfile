@@ -53,6 +53,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Habilitar mod_rewrite para las rutas de Laravel
 RUN a2enmod rewrite
 
+# mod_php no es thread-safe: requiere el MPM prefork, pero la imagen base
+# trae mpm_event activo por defecto, lo que causa "More than one MPM loaded"
+RUN a2dismod mpm_event && a2enmod mpm_prefork
+
 # Configurar Virtual Host de Apache apuntando a /public
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
