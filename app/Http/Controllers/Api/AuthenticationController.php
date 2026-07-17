@@ -13,6 +13,7 @@ use App\Services\User\AuthenticationManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticationController extends Controller
 {
@@ -57,6 +58,11 @@ class AuthenticationController extends Controller
             $dataUser->token = $token;
             return response()->json(new UserLoguedResource($dataUser));
         } catch (\Exception $e) {
+            Log::error('Fallo de login', [
+                'email' => $request->input('email'),
+                'exception' => $e->getMessage(),
+            ]);
+
             return response()->json(['message' => 'Credenciales incorrectas. Verificá tu email y contraseña.'], 401);
         }
     }
