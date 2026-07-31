@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\User;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -11,10 +12,21 @@ class UserManagmentApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleSeeder::class);
+    }
+
     public function test_register_user()
     {
-        $response = $this->postJson(route('auth.register'), [
+        $response = $this->postJson(route('auth.register.client'), [
             'name' => 'Test User',
+            'last_name' => 'Example',
+            'phone' => '1122334455',
+            'birth_date' => '1990-01-01',
+            'gender' => 'other',
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -38,7 +50,7 @@ class UserManagmentApiTest extends TestCase
 
     public function test_access_protected_route_without_token()
     {
-        $response = $this->getJson(route('user.profile'));
+        $response = $this->getJson(route('users.me'));
 
         $response->assertStatus(401);
     }
@@ -48,7 +60,7 @@ class UserManagmentApiTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->getJson(route('user.profile'));
+        $response = $this->getJson(route('users.me'));
 
         $response->assertStatus(200);
     }
@@ -58,8 +70,9 @@ class UserManagmentApiTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->putJson(route('user.edit-profile'), [
-            'name' => 'Updated Name'
+        $response = $this->putJson(route('users.update'), [
+            'name' => 'Updated Name',
+            'email' => $user->email,
         ]);
 
         $response->assertStatus(200);

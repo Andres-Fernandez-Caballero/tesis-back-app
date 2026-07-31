@@ -29,7 +29,7 @@ class AuthenticationTest extends TestCase
 
         $response
             ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
+            ->assertRedirect(route('filament.app.pages.dashboard', absolute: false));
 
         $this->assertAuthenticated();
     }
