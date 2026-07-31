@@ -2,13 +2,18 @@
 
 namespace App\Services;
 
+use App\Enums\PaymentStatus;
+use App\Enums\SubscriptionStatus;
 use App\Models\Payments\Payment;
+use App\Models\Subscriptions\Subscription;
+use App\Models\Subscriptions\SubscriptionPayment;
 use App\Models\Therapists\Booking;
 use App\Models\Therapists\States\Booking\BookingConfirmed;
 use App\Notifications\UserNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use MercadoPago\Client\MerchantOrder\MerchantOrderClient;
+use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\Client\Payment\PaymentRefundClient;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\MercadoPagoConfig;
@@ -124,6 +129,23 @@ class MercadoPagoService
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // Obtiene un pago de MP por su ID.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function getPaymentById(int $paymentId): ?object
+    {
+        try {
+            $client = new PaymentClient();
+            return $client->get($paymentId);
+        } catch (\Throwable $e) {
+            Log::warning("MercadoPagoService: error obteniendo payment #{$paymentId}", [
+                'error' => $e->getMessage(),
+            ]);
+            return null;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // Procesa el resultado de un pago para una reserva.
     // Idempotente: si ya existe un Payment con ese external_id, no hace nada.
     // Devuelve true si procesó, false si ya estaba procesado o no aplica.
@@ -162,5 +184,92 @@ class MercadoPagoService
             ]);
             return false;
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Crea una preference de Checkout Pro para el pago de una suscripción de local.
+    // return ['init_point', 'preference_id']
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function createSubscriptionPreference(SubscriptionPayment $payment): array
+    {
+        MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
+
+        $subscriptionId = $payment->subscription_id;
+
+        $backUrls = [
+            'success' => route('subscriptions.mp-return', ['status' => 'success', 'subscription_id' => $subscriptionId]),
+            'failure' => route('subscriptions.mp-return', ['status' => 'failure', 'subscription_id' => $subscriptionId]),
+            'pending' => route('subscriptions.mp-return', ['status' => 'pending', 'subscription_id' => $subscriptionId]),
+        ];
+
+        $payload = [
+            'items' => [[
+                'id'          => 'subscription_' . $subscriptionId,
+                'title'       => 'Suscripción BodyFix — ' . $payment->period_start->format('m/Y'),
+                'quantity'    => 1,
+                'unit_price'  => (float) $payment->amount,
+                'currency_id' => 'ARS',
+            ]],
+            'notification_url'   => route('subscriptions.webhook.mercado-pago'),
+            'external_reference' => (string) $subscriptionId,
+            'back_urls'          => $backUrls,
+            'auto_return'        => 'approved',
+        ];
+
+        Log::debug('MercadoPagoService: payload para crear preference de suscripción', ['payload' => $payload]);
+
+        try {
+            $client     = new PreferenceClient();
+            $preference = $client->create($payload);
+        } catch (\MercadoPago\Exceptions\MPApiException $e) {
+            $apiResponse = $e->getApiResponse();
+            Log::error('MercadoPagoService: error creando preference de suscripción', [
+                'status_code'   => $apiResponse?->getStatusCode(),
+                'response_body' => $apiResponse?->getContent(),
+                'payload_sent'  => $payload,
+            ]);
+            throw $e;
+        }
+
+        $isSandbox = config('mercadopago.sandbox');
+        $url = $isSandbox ? $preference->sandbox_init_point : $preference->init_point;
+
+        if (empty($url)) {
+            $url = $preference->init_point ?? '';
+        }
+
+        return [
+            'init_point'     => $url,
+            'preference_id'  => $preference->id,
+        ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Procesa el resultado de un pago aprobado para la suscripción de un local.
+    // Activa la suscripción y actualiza el período vigente.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function processSubscriptionPayment(Subscription $subscription, SubscriptionPayment $successPayment): void
+    {
+        DB::transaction(function () use ($subscription, $successPayment) {
+            $successPayment->update([
+                'status'  => PaymentStatus::APPROVED,
+                'paid_at' => now(),
+            ]);
+
+            $subscription->update([
+                'status'                => SubscriptionStatus::ACTIVE,
+                'current_period_start'  => $successPayment->period_start,
+                'current_period_end'    => $successPayment->period_end,
+            ]);
+        });
+
+        $subscription->local->user?->notify(
+            new UserNotification(
+                title: 'Pago de suscripción aprobado',
+                body: 'Tu suscripción fue activada correctamente. ¡Gracias por confiar en BodyFix!'
+            )
+        );
     }
 }

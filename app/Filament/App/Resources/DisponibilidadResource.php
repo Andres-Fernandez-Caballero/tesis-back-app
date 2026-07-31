@@ -3,6 +3,7 @@
 namespace App\Filament\App\Resources;
 
 use App\Enums\Role;
+use App\Filament\App\Concerns\RequiresActiveSubscription;
 use App\Filament\App\Resources\DisponibilidadResource\Pages;
 use App\Models\Therapists\Availability;
 use App\Models\Therapists\MassageTherapist;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class DisponibilidadResource extends Resource
 {
+    use RequiresActiveSubscription;
+
     protected static ?string $model = Availability::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-calendar-days';
@@ -25,7 +28,7 @@ class DisponibilidadResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole(Role::SPA_OWNER) ?? false;
+        return (auth()->user()?->hasRole(Role::SPA_OWNER) ?? false) && static::subscriptionIsActive();
     }
 
     /**

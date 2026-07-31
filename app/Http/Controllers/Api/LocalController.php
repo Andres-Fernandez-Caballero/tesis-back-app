@@ -78,6 +78,12 @@ class LocalController extends Controller
     /** POST /api/v1/locals/{local}/bookings  (auth:sanctum) */
     public function createBooking(Request $request, Local $local): JsonResponse
     {
+        if (! $local->hasActiveSubscription()) {
+            return response()->json([
+                'message' => 'Este local no tiene una suscripción activa.',
+            ], 403);
+        }
+
         $data = $request->validate([
             'masajista_id'    => ['required', 'integer', 'exists:therapists,id'],
             // Especialidad obligatoria: todo turno requiere especialidad con precio

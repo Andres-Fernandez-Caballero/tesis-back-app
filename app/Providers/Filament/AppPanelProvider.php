@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\RequireActiveSubscription;
 use App\Http\Middleware\RequirePasswordChange;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -54,6 +55,7 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 RequirePasswordChange::class,
+                RequireActiveSubscription::class,
             ])
             ->plugins([
                 FilamentFullCalendarPlugin::make()

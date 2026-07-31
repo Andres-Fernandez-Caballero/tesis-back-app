@@ -21,7 +21,7 @@ class UserLoguedResource extends JsonResource
                 'id' => $this->id,
                 'name' => $this->name,
                 'lastName' => $this->last_name,
-                'profilePicture' => $this->user_data->profile_picture,
+                'profilePicture' => $this->user_data?->profile_picture,
                 'email' => $this->email,
                 'role' => $this->roles->pluck('name')->first(),
             ]
