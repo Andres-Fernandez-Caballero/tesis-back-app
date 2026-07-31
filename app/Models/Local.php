@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Enums\LocalStatus;
 use App\Models\Especialidad;
 use App\Models\Review;
+use App\Models\Subscriptions\Subscription;
 use App\Models\Therapists\Therapist;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
 class Local extends Model
@@ -68,6 +70,11 @@ class Local extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class);
+    }
+
     public function seedDefaultEspecialidades(): void
     {
         foreach (Especialidad::defaults() as $nombre) {
@@ -83,5 +90,10 @@ class Local extends Model
     public function isSuspended(): bool
     {
         return $this->status === LocalStatus::SUSPENDED;
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return $this->subscription?->isActive() ?? false;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\App\Resources;
 
 use App\Enums\Role;
+use App\Filament\App\Concerns\RequiresActiveSubscription;
 use App\Filament\App\Resources\ReseniasResource\Pages;
 use App\Models\Review;
 use Filament\Forms\Form;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ReseniasResource extends Resource
 {
+    use RequiresActiveSubscription;
+
     protected static ?string $model = Review::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-star';
@@ -24,7 +27,7 @@ class ReseniasResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole(Role::SPA_OWNER) ?? false;
+        return (auth()->user()?->hasRole(Role::SPA_OWNER) ?? false) && static::subscriptionIsActive();
     }
 
     public static function canCreate(): bool

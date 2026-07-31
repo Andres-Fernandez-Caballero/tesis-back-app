@@ -3,6 +3,7 @@
 namespace App\Filament\App\Resources;
 
 use App\Enums\Role;
+use App\Filament\App\Concerns\RequiresActiveSubscription;
 use App\Filament\App\Resources\MasajistasResource\Pages;
 use App\Filament\App\Resources\MasajistasResource\RelationManagers\DisponibilidadRelationManager;
 use App\Filament\App\Resources\MasajistasResource\RelationManagers\ExcepcionesRelationManager;
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Hash;
 
 class MasajistasResource extends Resource
 {
+    use RequiresActiveSubscription;
+
     protected static ?string $model = MassageTherapist::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
@@ -33,7 +36,7 @@ class MasajistasResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole(Role::SPA_OWNER) ?? false;
+        return (auth()->user()?->hasRole(Role::SPA_OWNER) ?? false) && static::subscriptionIsActive();
     }
 
     /**

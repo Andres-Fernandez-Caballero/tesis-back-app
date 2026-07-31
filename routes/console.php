@@ -2,6 +2,7 @@
 
 use App\Console\Commands\CancelUnpaidBookings;
 use App\Console\Commands\ExpireStaleBookings;
+use App\Console\Commands\ResetMonthlySubscriptions;
 use App\Repositories\UserRepository;
 use App\Services\UserManagementService;
 use Illuminate\Support\Facades\Schedule;
@@ -17,6 +18,12 @@ Schedule::command(CancelUnpaidBookings::class)
     ->everyTwoMinutes()
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/cancel-unpaid-bookings.log'));
+
+// Reinicia a pago pendiente las suscripciones activas del período vencido — corre el 1 de cada mes
+Schedule::command(ResetMonthlySubscriptions::class)
+    ->monthlyOn(1, '00:10')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/reset-subscriptions.log'));
 
 // Desbaneos de usuarios
 Schedule::call(function () {

@@ -5,6 +5,7 @@ namespace App\Filament\App\Resources;
 use App\Enums\PaymentStatus;
 use App\Enums\Role;
 use App\Enums\TransactionStatus;
+use App\Filament\App\Concerns\RequiresActiveSubscription;
 use App\Filament\App\Resources\SolicitudesPendientesResource\Pages;
 use App\Models\Therapists\Booking;
 use App\Models\Therapists\States\Booking\BookingCancelled;
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SolicitudesPendientesResource extends Resource
 {
+    use RequiresActiveSubscription;
+
     protected static ?string $model = Booking::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-calendar-days';
@@ -31,7 +34,7 @@ class SolicitudesPendientesResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole(Role::SPA_OWNER) ?? false;
+        return (auth()->user()?->hasRole(Role::SPA_OWNER) ?? false) && static::subscriptionIsActive();
     }
 
     /**

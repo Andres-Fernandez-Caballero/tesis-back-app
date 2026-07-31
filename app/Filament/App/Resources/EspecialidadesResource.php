@@ -3,6 +3,7 @@
 namespace App\Filament\App\Resources;
 
 use App\Enums\Role;
+use App\Filament\App\Concerns\RequiresActiveSubscription;
 use App\Filament\App\Resources\EspecialidadesResource\Pages;
 use App\Models\Especialidad;
 use Filament\Forms;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EspecialidadesResource extends Resource
 {
+    use RequiresActiveSubscription;
+
     protected static ?string $model = Especialidad::class;
 
     protected static ?string $navigationIcon  = 'heroicon-o-tag';
@@ -25,7 +28,7 @@ class EspecialidadesResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole(Role::SPA_OWNER) ?? false;
+        return (auth()->user()?->hasRole(Role::SPA_OWNER) ?? false) && static::subscriptionIsActive();
     }
 
     /**

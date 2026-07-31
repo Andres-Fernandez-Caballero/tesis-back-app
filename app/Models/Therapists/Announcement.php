@@ -2,6 +2,8 @@
 
 namespace App\Models\Therapists;
 
+use App\Enums\SubscriptionStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +30,18 @@ class Announcement extends Model
     public function therapist(): BelongsTo
     {
         return $this->belongsTo(Therapist::class);
+    }
+
+    /**
+     * Excluye anuncios de terapeutas cuyo local no tiene una suscripción activa —
+     * un local sin suscripción o con el pago pendiente no puede mostrarse a clientes.
+     */
+    public function scopeWithActiveLocalSubscription(Builder $query): Builder
+    {
+        return $query->whereHas(
+            'therapist.local.subscription',
+            fn (Builder $q) => $q->where('status', SubscriptionStatus::ACTIVE),
+        );
     }
 
     /**

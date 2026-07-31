@@ -3,6 +3,7 @@
 namespace App\Filament\App\Pages;
 
 use App\Enums\Role;
+use App\Filament\App\Concerns\RequiresActiveSubscription;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 class LocalConfiguracion extends Page implements HasForms
 {
     use InteractsWithForms;
+    use RequiresActiveSubscription;
 
     protected static ?string $navigationIcon  = 'heroicon-o-building-storefront';
     protected static ?string $navigationLabel = 'Mi Local';
@@ -26,7 +28,7 @@ class LocalConfiguracion extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole(Role::SPA_OWNER) ?? false;
+        return (auth()->user()?->hasRole(Role::SPA_OWNER) ?? false) && static::subscriptionIsActive();
     }
 
     protected function getForms(): array
