@@ -1,0 +1,8 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile.railway"
+
+[deploy]
+startCommand = "php artisan schedule:run"
+cronSchedule = "*/5 * * * *"
+restartPolicyType = "NEVER"
