@@ -22,7 +22,7 @@
                 <a href="#como-funciona">Cómo funciona</a>
                 <a href="#testimonios">Testimonios</a>
                 <a href="#contacto">Contacto</a>
-                <button class="btn-outline" onclick="return false;">Descargar App</button>
+                <a class="btn-outline" href="https://github.com/Andres-Fernandez-Caballero/body-fix-massage-front/releases/latest" target="_blank">Descargar App</a>
                 <button class="btn-outline" id="btn-registrar-local">Registrar Local</button>
                 @guest
                     <a href="{{ route('login') }}" class="btn-primary">Portal Administrativo</a>
