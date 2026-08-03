@@ -3,5 +3,5 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile.railway"
 
 [deploy]
-startCommand = "php artisan queue:work --tries=3"
+startCommand = "php artisan queue:work --tries=3 --max-time=3600"
 restartPolicyType = "ALWAYS"
