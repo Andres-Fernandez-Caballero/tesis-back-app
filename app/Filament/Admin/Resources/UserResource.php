@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\Role;
 use App\Filament\Admin\Resources\UserResource\Pages;
 use App\Models\User;
+use App\Mail\AdminMessageMail;
 use App\Models\Users\States\ActiveUserState;
 use App\Models\Users\States\BannedUserState;
 use App\Models\Users\UserData;
@@ -15,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Mail;
 
 class UserResource extends Resource
 {
@@ -165,6 +167,41 @@ class UserResource extends Resource
                             ->title('Usuario desbloqueado')
                             ->success()
                             ->send();
+                    }),
+
+                Tables\Actions\Action::make('enviar_email')
+                    ->label('Enviar email')
+                    ->icon('heroicon-o-envelope')
+                    ->color('gray')
+                    ->modalHeading(fn (User $record): string => 'Enviar email a '.$record->name)
+                    ->modalSubmitActionLabel('Enviar')
+                    ->form([
+                        Forms\Components\TextInput::make('subject')
+                            ->label('Asunto')
+                            ->required()
+                            ->maxLength(255),
+
+                        Forms\Components\Textarea::make('message')
+                            ->label('Mensaje')
+                            ->required()
+                            ->rows(6),
+                    ])
+                    ->action(function (User $record, array $data): void {
+                        try {
+                            Mail::to($record->email)->send(
+                                new AdminMessageMail($data['subject'], $data['message'])
+                            );
+
+                            Notification::make()
+                                ->title('Email enviado')
+                                ->success()
+                                ->send();
+                        } catch (\Exception) {
+                            Notification::make()
+                                ->title('No se pudo enviar el email')
+                                ->danger()
+                                ->send();
+                        }
                     }),
 
                 Tables\Actions\DeleteAction::make()
