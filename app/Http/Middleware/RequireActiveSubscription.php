@@ -13,6 +13,12 @@ class RequireActiveSubscription
     {
         $user = auth()->user();
 
+        // Un local suspendido ya es redirigido por RequireActiveLocal; no lo
+        // desviemos también hacia la página de suscripción.
+        if ($user && $user->hasRole(Role::SPA_OWNER) && ($user->local?->isSuspended() ?? false)) {
+            return $next($request);
+        }
+
         if ($user && $user->hasRole(Role::SPA_OWNER) &&  ! ($user->local?->hasActiveSubscription() ?? false)) {
             // Livewire wire calls don't need to be redirected — la restricción de
             // página ya se aplicó en la carga inicial (canAccess/canViewAny).

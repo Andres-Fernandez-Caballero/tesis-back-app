@@ -26,7 +26,10 @@ class MiPerfilMasajista extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole(Role::MASSAGE_THERAPIST) ?? false;
+        $user = auth()->user();
+
+        return ($user?->hasRole(Role::MASSAGE_THERAPIST) ?? false)
+            && ! ($user?->associatedLocal()?->isSuspended() ?? false);
     }
 
     protected function getForms(): array

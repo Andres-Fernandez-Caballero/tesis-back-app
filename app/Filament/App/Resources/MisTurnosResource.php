@@ -34,7 +34,10 @@ class MisTurnosResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole(Role::MASSAGE_THERAPIST) ?? false;
+        $user = auth()->user();
+
+        return ($user?->hasRole(Role::MASSAGE_THERAPIST) ?? false)
+            && ! ($user?->associatedLocal()?->isSuspended() ?? false);
     }
 
     /**

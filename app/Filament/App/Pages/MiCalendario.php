@@ -16,6 +16,9 @@ class MiCalendario extends Page
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->hasRole(Role::MASSAGE_THERAPIST) ?? false;
+        $user = auth()->user();
+
+        return ($user?->hasRole(Role::MASSAGE_THERAPIST) ?? false)
+            && ! ($user?->associatedLocal()?->isSuspended() ?? false);
     }
 }

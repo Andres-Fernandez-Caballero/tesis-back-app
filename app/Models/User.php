@@ -93,4 +93,13 @@ class User extends Authenticatable implements FilamentUser, HasName
     {
         return $this->hasOne(Local::class);
     }
+
+    /**
+     * El local del que depende este usuario: el propio (dueño) o el de su
+     * masajista (colaborador). Null si no está asociado a ningún local.
+     */
+    public function associatedLocal(): ?Local
+    {
+        return $this->local ?? $this->therapist?->local;
+    }
 }

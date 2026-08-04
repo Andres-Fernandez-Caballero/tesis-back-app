@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\RequireActiveLocal;
 use App\Http\Middleware\RequireActiveSubscription;
 use App\Http\Middleware\RequirePasswordChange;
 use Filament\Http\Middleware\Authenticate;
@@ -55,6 +56,7 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 RequirePasswordChange::class,
+                RequireActiveLocal::class,
                 RequireActiveSubscription::class,
             ])
             ->plugins([
