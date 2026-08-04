@@ -16,9 +16,13 @@ class TherapistResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => "{$this->user->name} {$this->user->last_name}",
+            // Los masajistas gestionados por un local no tienen cuenta de usuario propia.
+            'name' => $this->user
+                ? trim("{$this->user->name} {$this->user->last_name}")
+                : $this->nombre,
             'specialization' => $this->specialization,
-            'score' => $this->user->score,
+            'score' => $this->user?->score,
+            'state' => $this->user ? UserStateResource::make($this->user->state) : null,
             'createdAt' => $this->created_at->toDateTimeString(),
             'updatedAt' => $this->updated_at->toDateTimeString(),
         ];

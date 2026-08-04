@@ -12,12 +12,12 @@ class SuspendedUserState extends AbstractUserState
 
     public function label(): string
     {
-        return 'Suspended';
+        return __('user.suspended.label');
     }
 
     public function description(): string
     {
-        return 'The user is suspended and cannot access the system.';
+        return __('user.suspended.description');
     }
 
     public function isActive(): bool

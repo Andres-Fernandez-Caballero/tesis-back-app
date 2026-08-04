@@ -20,8 +20,9 @@ class UserResource extends JsonResource
                 'role' => $this->roles->pluck('name')->first(),
                 'address' => $this->user_data->address,
                 'gender' => $this->user_data->gender,
-                'birth_date' => $this->user_data->birth_date,     
+                'birth_date' => $this->user_data->birth_date,
             ],
+            'state' => UserStateResource::make($this->state),
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

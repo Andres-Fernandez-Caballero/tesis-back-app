@@ -11,12 +11,12 @@ class ActiveUserState extends AbstractUserState
 
     public function label(): string
     {
-        return 'Active';
+        return __('user.active.label');
     }
 
     public function description(): string
     {
-        return 'The user is active and can access the system.';
+        return __('user.active.description');
     }
 
     public function isActive(): bool

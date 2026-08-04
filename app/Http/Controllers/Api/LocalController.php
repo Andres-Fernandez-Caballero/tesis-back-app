@@ -11,6 +11,8 @@ use App\Http\Resources\MasistaResource;
 use App\Http\Resources\BookingResource;
 use App\Models\Local;
 use App\Models\Therapists\Booking;
+use App\Models\Therapists\States\Booking\BookingConfirmed;
+use App\Models\Therapists\States\Booking\BookingPending;
 use App\Models\Therapists\States\Booking\BookingPendingPayment;
 use App\Services\LocalAvailabilityService;
 use App\Services\MercadoPagoService;
@@ -107,6 +109,29 @@ class LocalController extends Controller
             ], 422);
         }
 
+        $tieneLaEspecialidad = \App\Models\Therapists\Therapist::whereKey($data['masajista_id'])
+            ->whereHas('especialidades', fn ($q) => $q->where('especialidades.id', $data['especialidad_id']))
+            ->exists();
+
+        if (! $tieneLaEspecialidad) {
+            return response()->json([
+                'message' => 'El masajista no posee la especialidad seleccionada.',
+            ], 422);
+        }
+
+        $tieneConflicto = Booking::where('therapist_id', $data['masajista_id'])
+            ->whereDate('date', $data['date'])
+            ->where('start_time', '<', $endTime)
+            ->where('end_time', '>', $data['start_time'])
+            ->whereState('state', [BookingPendingPayment::class, BookingPending::class, BookingConfirmed::class])
+            ->exists();
+
+        if ($tieneConflicto) {
+            return response()->json([
+                'message' => 'El turno seleccionado ya no está disponible.',
+            ], 422);
+        }
+
         return DB::transaction(function () use ($data, $local, $request, $endTime, $price, $especialidad) {
             $booking = Booking::create([
                 'therapist_id'    => $data['masajista_id'],
@@ -127,7 +152,7 @@ class LocalController extends Controller
             // Crear la transacción vinculada a la reserva
             $booking->transaction()->create([
                 'client_id'    => $request->user()->id,
-                'therapist_id' => $booking->therapist->user->id,
+                'therapist_id' => $booking->therapist->user?->id,
                 'amount'       => $price,
                 'currency'     => 'ARS',
                 'status'       => TransactionStatus::PENDING,

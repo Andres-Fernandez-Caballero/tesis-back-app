@@ -11,12 +11,12 @@ class BannedUserState extends AbstractUserState
 
     public function label(): string
     {
-        return 'Banned';
+        return __('user.banned.label');
     }
 
     public function description(): string
     {
-        return 'The user is banned and cannot access the system.';
+        return __('user.banned.description');
     }
 
     public function isActive(): bool

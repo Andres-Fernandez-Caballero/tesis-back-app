@@ -21,7 +21,7 @@ class AuthenticationController extends Controller
     public function __construct(
         protected readonly AuthenticationManagementService $service
     ) {}
-    
+
     /**
      * Register a new user type client or therapist
      * @param \App\Http\Requests\Users\RegisterUserClientRequest $request
@@ -35,7 +35,7 @@ class AuthenticationController extends Controller
 
         return response()->json(new UserLoguedResource($dataUser), 201);
     }
-    
+
     /**
      * Register a new user type client or therapist
      * @param \App\Http\Requests\Users\RegisterUserTherapistRequest $request
@@ -46,7 +46,7 @@ class AuthenticationController extends Controller
         $token = $this->service->registerUser($request->validated(), Role::MASSAGE_THERAPIST);
         $dataUser = clone Auth::user();
         $dataUser->token = $token;
-        
+
         return response()->json(new UserLoguedResource($dataUser), 201);
     }
 

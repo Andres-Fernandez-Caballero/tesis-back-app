@@ -22,6 +22,7 @@ class UserLoguedResource extends JsonResource
                 'name' => $this->name,
                 'lastName' => $this->last_name,
                 'profilePicture' => $this->user_data?->profile_picture,
+                'state' => UserStateResource::make($this->state),
                 'email' => $this->email,
                 'role' => $this->roles->pluck('name')->first(),
             ]

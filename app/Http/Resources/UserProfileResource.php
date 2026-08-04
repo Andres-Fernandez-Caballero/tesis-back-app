@@ -17,6 +17,7 @@ class UserProfileResource extends JsonResource
                 'email'          => $this->email,
                 'role'           => $this->roles->pluck('name')->first(),
                 'profilePicture' => $this->user_data?->profile_picture ?? null,
+                'state'          => UserStateResource::make($this->state),
             ],
         ];
     }
