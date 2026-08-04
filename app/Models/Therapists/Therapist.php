@@ -20,6 +20,15 @@ class Therapist extends Model
 
     protected $hidden = ['field_m', 'field_o'];
 
+    protected static function booted(): void
+    {
+        // Un masajista con cuenta de usuario propia (login al portal) no debe
+        // dejar un usuario huérfano al eliminarse.
+        static::deleted(function (Therapist $therapist) {
+            $therapist->user?->delete();
+        });
+    }
+
     public function newFromBuilder($attributes = [], $connection = null)
     {
         $attributes = (array) $attributes;
