@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ef845fa02e0e02e1b4f76486b46858b",
+    "content-hash": "90319f7fe19e42f03d4f1ad4c501545c",
     "packages": [
         {
             "name": "amphp/amp",
@@ -6161,6 +6161,76 @@
             "time": "2026-03-19T10:36:26+00:00"
         },
         {
+            "name": "s-ichikawa/laravel-sendgrid-driver",
+            "version": "4.0.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/s-ichikawa/laravel-sendgrid-driver.git",
+                "reference": "403c50812c3241b7ef5e694b5ab5304b9594cb59"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/s-ichikawa/laravel-sendgrid-driver/zipball/403c50812c3241b7ef5e694b5ab5304b9594cb59",
+                "reference": "403c50812c3241b7ef5e694b5ab5304b9594cb59",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.2",
+                "illuminate/mail": "^9.0||^10.0||^11.0||^12.0||^13.0",
+                "illuminate/notifications": "^9.0||^10.0||^11.0||^12.0||^13.0",
+                "illuminate/support": "^9.0||^10.0||^11.0||^12.0||^13.0"
+            },
+            "require-dev": {
+                "illuminate/container": "^9.0||^10.0||^11.0||^12.0||^13.0",
+                "illuminate/filesystem": "^9.0||^10.0||^11.0||^12.0||^13.0",
+                "laravel/helpers": "^1.2",
+                "phpunit/phpunit": "^9.5.8||^10.0",
+                "vlucas/phpdotenv": "^5.4.1"
+            },
+            "suggest": {
+                "s-ichikawa/sendgrid-api-builder": "support to build json for sendgrid api"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Sichikawa\\LaravelSendgridDriver\\SendgridTransportServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Sichikawa\\LaravelSendgridDriver\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "shingo.ichikawa",
+                    "email": "ichikawa.shingo.0829@gmail.com"
+                }
+            ],
+            "description": "This library adds a 'sendgrid' mail driver to Laravel.",
+            "keywords": [
+                "laravel",
+                "sendgrid"
+            ],
+            "support": {
+                "issues": "https://github.com/s-ichikawa/laravel-sendgrid-driver/issues",
+                "source": "https://github.com/s-ichikawa/laravel-sendgrid-driver/tree/4.0.11"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/s-ichikawa",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-03-15T15:02:30+00:00"
+        },
+        {
             "name": "saade/filament-fullcalendar",
             "version": "v3.2.4",
             "source": {
@@ -12161,5 +12231,5 @@
         "php": "^8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

@@ -65,6 +65,12 @@ return [
             'transport' => 'resend',
         ],
 
+        // Usa la Web API de SendGrid (HTTPS), no SMTP — necesario porque Railway
+        // bloquea el tráfico SMTP saliente en el plan Hobby.
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+        ],
+
         'sendmail' => [
             'transport' => 'sendmail',
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
