@@ -29,6 +29,10 @@ abstract class BookingState extends State
             // ── Flujo post-confirmación ───────────────────────────────────────
             ->allowTransition(BookingConfirmed::class, BookingCompleted::class)
             ->allowTransition(BookingConfirmed::class, BookingCancelled::class)
-            ->allowTransition(BookingConfirmed::class, BookingExpired::class);
+            ->allowTransition(BookingConfirmed::class, BookingExpired::class)
+            // ── Pago aprobado tarde: el turno ya se había cancelado/expirado
+            // (p. ej. por timeout) cuando llega la confirmación de MercadoPago ──
+            ->allowTransition(BookingCancelled::class, BookingConfirmed::class)
+            ->allowTransition(BookingExpired::class,   BookingConfirmed::class);
     }
 }

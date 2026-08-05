@@ -8,7 +8,10 @@ use App\Models\Payments\Payment;
 use App\Models\Subscriptions\Subscription;
 use App\Models\Subscriptions\SubscriptionPayment;
 use App\Models\Therapists\Booking;
+use App\Models\Therapists\States\Booking\BookingCancelled;
+use App\Models\Therapists\States\Booking\BookingCompleted;
 use App\Models\Therapists\States\Booking\BookingConfirmed;
+use App\Models\Therapists\States\Booking\BookingExpired;
 use App\Notifications\UserNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -153,8 +156,21 @@ class MercadoPagoService
 
     public function processPayment(Booking $booking, Payment $successPayment)
     {
-        DB::transaction(function () use ($booking, $successPayment) {
+        $wasReactivated = false;
+
+        DB::transaction(function () use ($booking, $successPayment, &$wasReactivated) {
             $booking->transaction->markPaymentAsPaid($successPayment->id);
+
+            // Webhook duplicado: ya estaba confirmado o completado, no hay nada más que hacer.
+            if ($booking->state instanceof BookingConfirmed || $booking->state instanceof BookingCompleted) {
+                return;
+            }
+
+            // El turno ya se había cancelado/expirado (p. ej. por timeout de pago) cuando
+            // llegó esta confirmación tardía de MercadoPago: el cliente sí pagó, así que
+            // se reactiva el turno como confirmado en vez de perder el pago.
+            $wasReactivated = $booking->state instanceof BookingCancelled || $booking->state instanceof BookingExpired;
+
             $booking->state->transitionTo(BookingConfirmed::class);
         });
 
@@ -164,6 +180,15 @@ class MercadoPagoService
                 body: "Tu pago ha sido aprobado. El masajista será notificado y confirmará tu turno pronto."
             )
         );
+
+        if ($wasReactivated) {
+            $booking->therapist->user?->notify(
+                new UserNotification(
+                    title: 'Turno reactivado',
+                    body: "El turno del {$booking->date} a las {$booking->start_time} se había cancelado por falta de pago, pero el cliente pagó y volvió a confirmarse.",
+                )
+            );
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
