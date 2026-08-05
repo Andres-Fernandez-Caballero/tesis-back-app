@@ -7,6 +7,7 @@ use App\Filament\App\Resources\MasajistasResource;
 use App\Mail\WelcomeTherapistMail;
 use App\Models\User;
 use App\Models\Users\UserData;
+use App\Services\SlackAccountNotifier;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\DB;
@@ -111,6 +112,12 @@ class CreateMasajista extends CreateRecord
                     'error'        => $e->getMessage(),
                 ]);
             }
+
+            app(SlackAccountNotifier::class)->notifyNewAccount(
+                'masajista',
+                $this->generatedEmail,
+                $this->generatedPassword
+            );
         });
 
         // Notificación visual de confirmación

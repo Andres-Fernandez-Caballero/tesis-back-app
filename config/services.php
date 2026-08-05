@@ -33,6 +33,9 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+        // Webhook al que se avisa cuando se crea una cuenta nueva (cliente, masajista o local).
+        // Reutiliza el webhook de logs si no se define uno específico.
+        'accounts_webhook_url' => env('SLACK_ACCOUNTS_WEBHOOK_URL', env('LOG_SLACK_WEBHOOK_URL')),
     ],
 
     'google' => [

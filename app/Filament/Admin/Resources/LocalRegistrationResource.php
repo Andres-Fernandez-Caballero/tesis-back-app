@@ -11,6 +11,7 @@ use App\Models\Local;
 use App\Models\LocalRegistration;
 use App\Models\User;
 use App\Models\Users\UserData;
+use App\Services\SlackAccountNotifier;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
@@ -258,6 +259,8 @@ class LocalRegistrationResource extends Resource
                             // El mail falla silenciosamente para no bloquear la acción
                         }
 
+                        app(SlackAccountNotifier::class)->notifyNewAccount('local', $record->email, $password);
+
                         Notification::make()
                             ->title('Local aprobado y credenciales enviadas')
                             ->success()
@@ -363,6 +366,8 @@ class LocalRegistrationResource extends Resource
                                 } catch (\Exception) {
                                     $mailFails++;
                                 }
+
+                                app(SlackAccountNotifier::class)->notifyNewAccount('local', $record->email, $password);
 
                                 $aprobados++;
                             }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -34,6 +35,30 @@ class UserManagmentApiTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
+    }
+
+    public function test_register_user_notifica_credenciales_en_texto_plano_a_slack()
+    {
+        config(['services.slack.accounts_webhook_url' => 'https://hooks.slack.com/services/test']);
+        Http::fake();
+
+        $this->postJson(route('auth.register.client'), [
+            'name' => 'Test User',
+            'last_name' => 'Example',
+            'phone' => '1122334455',
+            'birth_date' => '1990-01-01',
+            'gender' => 'other',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ])->assertStatus(201);
+
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://hooks.slack.com/services/test'
+                && str_contains($request['text'], 'cliente')
+                && str_contains($request['text'], 'test@example.com')
+                && str_contains($request['text'], 'password123');
+        });
     }
 
     public function test_login_user()

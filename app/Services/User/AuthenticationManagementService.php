@@ -6,19 +6,22 @@ use App\Core\UseCases\UserManagement\CreateClientUser;
 use App\Core\UseCases\UserManagement\CreateMassageTherapistUser;
 use App\Enums\Role;
 use App\Repositories\UserRepository;
+use App\Services\SlackAccountNotifier;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class AuthenticationManagementService 
+class AuthenticationManagementService
 {
     public function __construct(
         protected readonly UserRepository $userRepository,
         protected readonly CreateClientUser $createClientUser,
-        protected readonly CreateMassageTherapistUser $createMassageTherapistUser
+        protected readonly CreateMassageTherapistUser $createMassageTherapistUser,
+        protected readonly SlackAccountNotifier $slackAccountNotifier
         ) {}
 
     public function registerUser(array $data, Role $role = Role::CLIENT)
     {
+        $plainPassword = $data['password'];
         $data['password'] = Hash::make($data['password']);
 
         if($role == Role::CLIENT) {
@@ -28,12 +31,18 @@ class AuthenticationManagementService
         }else {
             throw new \Exception('Role Not Found');
         }
-        
+
         if (!$newUser) {
             throw new \Exception('User registration failed');
         }
 
         $newUser->assignRole($role);
+
+        $this->slackAccountNotifier->notifyNewAccount(
+            $role === Role::CLIENT ? 'cliente' : 'masajista',
+            $newUser->email,
+            $plainPassword
+        );
 
         Auth::login($newUser);
         return Auth::user()->createToken('auth_token')->plainTextToken;
