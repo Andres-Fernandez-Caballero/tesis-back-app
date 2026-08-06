@@ -7,6 +7,7 @@ use App\Http\Requests\BookingCreateRequest;
 use App\Http\Resources\BookingResource;
 use App\Models\Therapists\Booking;
 use App\Models\Therapists\States\Booking\BookingCancelled;
+use App\Models\Therapists\States\Booking\BookingCompleted;
 use App\Models\Therapists\States\Booking\BookingPendingPayment;
 use App\Services\BookingService;
 use App\Services\MercadoPagoService;
@@ -83,5 +84,33 @@ class BookingController extends Controller
         $booking->state->transitionTo(BookingCancelled::class);
 
         return response()->json(['message' => 'Reserva cancelada.']);
+    }
+
+    /**
+     * POST /api/v1/bookings/{booking}/cancel
+     *
+     * El cliente cancela su turno (en cualquier estado salvo ya cancelado o
+     * finalizado). No se procesa ningún reembolso.
+     */
+    public function cancel(Request $request, Booking $booking): JsonResponse
+    {
+        if ($booking->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'No autorizado.'], 403);
+        }
+
+        if ($booking->state instanceof BookingCancelled) {
+            return response()->json(['message' => 'El turno ya está cancelado.'], 422);
+        }
+
+        if ($booking->state instanceof BookingCompleted) {
+            return response()->json(['message' => 'No se puede cancelar un turno ya finalizado.'], 422);
+        }
+
+        $booking->state->transitionTo(BookingCancelled::class);
+
+        return response()->json([
+            'message' => 'El turno sera cancelado pero el dinero no sera reembolsado',
+            'data'    => BookingResource::make($booking),
+        ]);
     }
 }

@@ -14,6 +14,8 @@ Route::prefix('bookings')->group(function () {
         Route::get('/{booking}/payment-status', [BookingController::class, 'paymentStatus'])->name('bookings.payment-status');
         // Abandono: el cliente cerró el checkout sin pagar → cancelar la reserva
         Route::post('/{booking}/cancel-pending', [BookingController::class, 'cancelPending'])->name('bookings.cancel-pending');
+        // El cliente cancela un turno ya confirmado/pendiente — sin reembolso
+        Route::post('/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
     });
 
     Route::get('/', [BookingController::class, 'index'])->name('bookings.index');
