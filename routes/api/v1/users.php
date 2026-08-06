@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('users')->group(function () {
 
     // Públicos
-    Route::get('/', [UserManagementController::class, 'index'])
+    Route::get('/', [UserManagementController::class, 'getAllUsers'])
         ->name('users.index');
 
-    Route::get('/therapists', [UserManagementController::class, 'therapists'])
+    Route::get('/therapists', [UserManagementController::class, 'getAllTherapists'])
         ->name('users.therapists');
 
-    Route::get('/clients', [UserManagementController::class, 'clients'])
+    Route::get('/clients', [UserManagementController::class, 'getAllClients'])
         ->name('users.clients');
 
     // Protegidos
