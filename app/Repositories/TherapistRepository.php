@@ -24,4 +24,9 @@ class TherapistRepository
 
         return Therapist::all();
     }
+
+    public function findById(int $id): Therapist
+    {
+        return Therapist::findOrFail($id);
+    }
 }

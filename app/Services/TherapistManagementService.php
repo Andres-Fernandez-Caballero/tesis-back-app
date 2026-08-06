@@ -41,8 +41,13 @@ class TherapistManagementService
         return $this->therapistRepository->getAll();
     }
 
-    public function getAllMassageTherapists()
+    public function getAllMassageTherapists(string $type)
     {
-        return $this->therapistRepository->getAllMassageTherapists();
+        return $this->therapistRepository->getAllMassageTherapists($type);
+    }
+
+    public function findById(int $id): Therapist
+    {
+        return $this->therapistRepository->findById($id);
     }
 }

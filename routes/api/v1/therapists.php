@@ -10,7 +10,9 @@ Route::prefix('therapists')
         Route::get('/', [TherapistController::class, 'all'])->name('therapists.all');
         Route::get('/type/{type}', [TherapistController::class, 'getAllTherapistsByType'])->name('therapists.type');
         Route::post('/', [TherapistController::class, 'store'])->name('therapists.store');
-        Route::get('/{id}', [TherapistController::class, 'details'])->name('therapists.details');
+        Route::get('/{id}', [TherapistController::class, 'details'])
+            ->where('id', '[0-9]+')
+            ->name('therapists.details');
         Route::get('/{announcement}/availability', [AvailabilityController::class, 'list'])->name('therapists.announcements.list');
 
         Route::middleware('auth:sanctum')->group(function () {
