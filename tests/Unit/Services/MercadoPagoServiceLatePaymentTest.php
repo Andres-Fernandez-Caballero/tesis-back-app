@@ -76,7 +76,7 @@ class MercadoPagoServiceLatePaymentTest extends TestCase
             'amount' => 100,
             'currency' => 'ARS',
             'status' => TransactionStatus::PENDING,
-            'description' => 'Seña de prueba',
+            'description' => 'Monto de prueba',
         ]);
 
         $payment = Payment::create([

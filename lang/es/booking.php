@@ -25,6 +25,6 @@ return [
     ],
     'pending_payment' => [
         'label' => 'Pendiente de pago',
-        'description' => 'La reserva está esperando la confirmación del pago de la seña.',
+        'description' => 'La reserva está esperando la confirmación del pago.',
     ],
 ];

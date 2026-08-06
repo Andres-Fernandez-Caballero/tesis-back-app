@@ -156,7 +156,7 @@ class LocalController extends Controller
                 'amount'       => $price,
                 'currency'     => 'ARS',
                 'status'       => TransactionStatus::PENDING,
-                'description'  => 'Seña — ' . ($especialidad->nombre ?? 'BodyFix'),
+                'description'  => 'Monto — ' . ($especialidad->nombre ?? 'BodyFix'),
             ]);
 
             return response()->json([

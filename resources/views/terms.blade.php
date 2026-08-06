@@ -244,12 +244,12 @@
 
                     <div class="legal-section" id="sec-3">
                         <h3><span class="section-num">3</span> Reservas y cancelaciones</h3>
-                        <p>Las reservas se confirman una vez abonada la seña correspondiente. Las cancelaciones deben realizarse con al menos 24 horas de anticipación para evitar penalidades. La devolución de la seña en caso de cancelación queda sujeta a la política del local seleccionado.</p>
+                        <p>Las reservas se confirman una vez abonado el pago correspondiente. Las cancelaciones deben realizarse con al menos 24 horas de anticipación para evitar penalidades. La devolución del Pago abonado en caso de cancelación queda sujeta a la política del local seleccionado.</p>
                     </div>
 
                     <div class="legal-section" id="sec-4">
                         <h3><span class="section-num">4</span> Pagos</h3>
-                        <p>Los pagos se procesan a través de pasarelas de pago seguras. BodyFix no almacena datos de tarjetas de crédito ni débito. El precio final del servicio es el indicado al momento de la reserva y puede incluir una seña previa.</p>
+                        <p>Los pagos se procesan a través de pasarelas de pago seguras. BodyFix no almacena datos de tarjetas de crédito ni débito. El precio final del servicio es el indicado al momento de la reserva.</p>
                     </div>
 
                     <div class="legal-section" id="sec-5">

@@ -54,8 +54,8 @@ class EspecialidadesResource extends Resource
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('price')
-                    ->label('Precio de seña ($)')
-                    ->helperText('Monto que el cliente abona como seña al reservar el turno. Requerido para poder publicar la especialidad.')
+                    ->label('Precio del turno ($)')
+                    ->helperText('Monto que el cliente abona al reservar el turno. Requerido para poder publicar la especialidad.')
                     ->numeric()
                     ->minValue(1)
                     ->step(0.01)
@@ -63,7 +63,7 @@ class EspecialidadesResource extends Resource
                     ->suffix('ARS')
                     ->required()
                     ->validationMessages([
-                        'required' => 'El precio de la seña es obligatorio. Ingresá el monto que cobrás al cliente al reservar.',
+                        'required' => 'El precio del turno es obligatorio. Ingresá el monto que cobrás al cliente al reservar.',
                         'min'      => 'El precio debe ser mayor a cero.',
                     ]),
             ]);
@@ -79,7 +79,7 @@ class EspecialidadesResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Precio de seña')
+                    ->label('Precio del turno')
                     ->money('ARS')
                     ->placeholder('—')
                     ->sortable(),

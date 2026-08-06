@@ -91,7 +91,7 @@ class MisTurnosResource extends Resource
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Seña')
+                    ->label('Monto abonado')
                     ->formatStateUsing(fn ($state) => $state !== null
                         ? '$ ' . number_format((float) $state, 0, ',', '.')
                         : '—'
@@ -173,7 +173,7 @@ class MisTurnosResource extends Resource
                             ->exists();
 
                         return $tieneSeña
-                            ? 'El cliente abonó una seña. Si cancelás, se emitirá el reembolso automáticamente y se notificará al cliente. ¿Cancelar igualmente?'
+                            ? 'El cliente abonó un pago. Si cancelás, se emitirá el reembolso automáticamente y se notificará al cliente. ¿Cancelar igualmente?'
                             : '¿Cancelar este turno? Se notificará al cliente.';
                     })
                     ->visible(fn (Booking $record) => $record->state instanceof BookingConfirmed)
@@ -201,7 +201,7 @@ class MisTurnosResource extends Resource
 
                         if ($record->user) {
                             $body = ($approvedPayment && $refundOk)
-                                ? "Tu turno del {$record->date} fue cancelado por el masajista. Tu seña será reembolsada en los próximos días hábiles."
+                                ? "Tu turno del {$record->date} fue cancelado por el masajista. Tu Pago será reembolsado en los próximos días hábiles."
                                 : "Tu turno del {$record->date} fue cancelado por el masajista.";
 
                             $record->user->notify(new UserNotification(

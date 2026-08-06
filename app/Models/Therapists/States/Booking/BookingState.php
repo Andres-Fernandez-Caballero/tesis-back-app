@@ -14,7 +14,7 @@ abstract class BookingState extends State
     {
         return parent::config()
             ->default(BookingPending::class)
-            // ── Flujo con seña (nuevo) ────────────────────────────────────────
+            // ── Flujo con pago (nuevo) ────────────────────────────────────────
             // pending_payment → confirmed: pago aprobado (directo, sin step manual)
             ->allowTransition(BookingPendingPayment::class, BookingConfirmed::class)  // pago aprobado ✓
             ->allowTransition(BookingPendingPayment::class, BookingCancelled::class)  // pago rechazado/timeout

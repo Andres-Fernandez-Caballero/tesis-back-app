@@ -97,7 +97,7 @@ class MiCalendarioWidget extends FullCalendarWidget
                 ->content(fn (?Booking $record) => $record?->especialidad?->nombre ?? '—'),
 
             Placeholder::make('precio')
-                ->label('Seña')
+                ->label('Monto abonado')
                 ->content(fn (?Booking $record) => $record?->price !== null
                     ? '$ ' . number_format((float) $record->price, 2, ',', '.')
                     : '—'),

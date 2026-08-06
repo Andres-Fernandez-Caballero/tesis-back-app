@@ -49,7 +49,7 @@ class CancelUnpaidBookings extends Command
                         if ($booking->user) {
                             $booking->user->notify(new UserNotification(
                                 title: 'Reserva cancelada',
-                                body:  'Tu reserva fue cancelada porque el pago de la seña no se completó dentro del tiempo límite.',
+                                body:  'Tu reserva fue cancelada porque el pago no se completó dentro del tiempo límite.',
                             ));
                         }
                     });
